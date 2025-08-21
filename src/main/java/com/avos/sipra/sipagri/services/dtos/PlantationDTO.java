@@ -1,0 +1,25 @@
+package com.avos.sipra.sipagri.services.dtos;
+
+import com.avos.sipra.sipagri.types.Location;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PlantationDTO {
+    private Long id;
+
+    private Location gpsLocation;
+
+    private Double farmedArea;
+
+    private java.util.List<ProductionDTO> productions;
+
+    private Long planterId;
+
+    private KitDTO kit;
+}
