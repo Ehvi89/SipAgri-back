@@ -29,7 +29,7 @@ jobs:
 
       # Étape 3: Builder le projet avec Maven (cela crée le fichier JAR dans target/)
       - name: Build with Maven
-        run: mvn -B -X package --file pom.xml
+        run: mvn -B package --file pom.xml
         # L'option -B est pour le mode batch (non interactif)
 
       # Étape 4: Déployer le JAR sur le serveur Windows via SCP/SSH
