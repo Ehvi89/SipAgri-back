@@ -8,7 +8,8 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    # 👉 Ici on utilise le runner que tu as installé sur ton Windows 10
+    runs-on: self-hosted
     concurrency: 
       group: production-deploy
       cancel-in-progress: false
@@ -30,86 +31,50 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      # Étape 4: Copier le JAR vers le dossier TEMP du serveur
-      - name: Copy JAR to Temp Directory
-        uses: appleboy/scp-action@v0.1.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: 22
-          source: "target/*.jar"
-          target: "/tmp/"
-          strip_components: 1
-      
-      # Étape 5: Déplacer, archiver et redémarrer (VERSION CORRIGÉE)
-      - name: Deploy, Archive and Restart Service
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: 22
-          script: |
-            try {
-                # Chemins (NOTE: /tmp/ sur Windows est en fait C:\Windows\Temp\)
-                $JAR_SOURCE = "C:\Windows\Temp\*.jar"
-                $DEPLOY_DIR = "${{ secrets.SERVER_JAR_PATH }}"
-                $ARCHIVE_DIR = "$DEPLOY_DIR\MAJ"
-                $SERVICE_NAME = "${{ secrets.NSSM_SERVICE_NAME }}"
-                $DATE = Get-Date -Format "yyyy.MM.dd"
-                $TODAY_ARCHIVE = "$ARCHIVE_DIR\$DATE"
-                
-                # Création des dossiers
-                Write-Output "📁 Création des dossiers d'archive..."
-                New-Item -ItemType Directory -Path $ARCHIVE_DIR -Force -ErrorAction SilentlyContinue
-                New-Item -ItemType Directory -Path $TODAY_ARCHIVE -Force -ErrorAction SilentlyContinue
-                
-                Write-Output "⏹️  Arrêt du service $SERVICE_NAME..."
-                C:\nssm\win64\nssm.exe stop $SERVICE_NAME
-                Start-Sleep -Seconds 5
-                
-                # Archivage des anciens JAR
-                Write-Output "📦 Recherche des anciennes versions..."
-                $OLD_JARS = Get-ChildItem -Path $DEPLOY_DIR -Filter "*.jar" -ErrorAction SilentlyContinue
-                if ($OLD_JARS) {
-                    Write-Output "📦 Archivage des anciennes versions..."
-                    foreach ($JAR in $OLD_JARS) {
-                        $ARCHIVE_PATH = "$TODAY_ARCHIVE\$($JAR.Name)"
-                        Move-Item -Path $JAR.FullName -Destination $ARCHIVE_PATH -Force
-                        Write-Output "✅ Archivé: $($JAR.Name) -> $ARCHIVE_PATH"
-                    }
-                } else {
-                    Write-Output "ℹ️  Aucun fichier JAR existant à archiver"
-                }
-                
-                # Déploiement du nouveau JAR
-                Write-Output "🚀 Déploiement de la nouvelle version..."
-                $NEW_JAR = Get-ChildItem -Path $JAR_SOURCE -ErrorAction SilentlyContinue
-                if ($NEW_JAR) {
-                    Move-Item -Path $NEW_JAR.FullName -Destination $DEPLOY_DIR -Force
-                    Write-Output "✅ Déployé: $($NEW_JAR.Name) -> $DEPLOY_DIR"
-                } else {
-                    throw "❌ Aucun fichier JAR trouvé dans C:\Windows\Temp\"
-                }
-                
-                # Redémarrage du service
-                Write-Output "🔄 Démarrage du service $SERVICE_NAME..."
-                C:\nssm\win64\nssm.exe start $SERVICE_NAME
-                Start-Sleep -Seconds 2
-                
-                # Vérification finale
-                Write-Output "📊 Statut du service:"
-                C:\nssm\win64\nssm.exe status $SERVICE_NAME
-                
-                # Nettoyage du fichier temporaire
-                Write-Output "🧹 Nettoyage du fichier temporaire..."
-                Remove-Item -Path $JAR_SOURCE -Force -ErrorAction SilentlyContinue
-                
-                Write-Output "`n✅ Déploiement terminé avec succès!"
-                
-            } catch {
-                Write-Output "❌ Erreur lors du déploiement: $($_.Exception.Message)"
-                Write-Output "Stack trace: $($_.ScriptStackTrace)"
-                exit 1
-            }
+      # Étape 4: Déployer le JAR (localement sur le serveur Windows)
+      - name: Deploy JAR locally
+        shell: pwsh
+        run: |
+          try {
+              # Chemins (issus de tes secrets)
+              $DEPLOY_DIR   = "${{ secrets.SERVER_JAR_PATH }}"
+              $ARCHIVE_DIR  = "$DEPLOY_DIR\MAJ"
+              $SERVICE_NAME = "${{ secrets.NSSM_SERVICE_NAME }}"
+              $DATE         = Get-Date -Format "yyyy.MM.dd"
+              $TODAY_ARCHIVE = "$ARCHIVE_DIR\$DATE"
+
+              Write-Output "📁 Création des dossiers d'archive..."
+              New-Item -ItemType Directory -Path $TODAY_ARCHIVE -Force -ErrorAction SilentlyContinue
+
+              Write-Output "⏹️  Arrêt du service $SERVICE_NAME..."
+              C:\nssm\win64\nssm.exe stop $SERVICE_NAME
+              Start-Sleep -Seconds 5
+
+              Write-Output "📦 Archivage des anciens JAR..."
+              $OLD_JARS = Get-ChildItem -Path $DEPLOY_DIR -Filter "*.jar" -ErrorAction SilentlyContinue
+              foreach ($JAR in $OLD_JARS) {
+                  Move-Item -Path $JAR.FullName -Destination "$TODAY_ARCHIVE\$($JAR.Name)" -Force
+              }
+
+              Write-Output "🚀 Déploiement de la nouvelle version..."
+              $NEW_JAR = Get-ChildItem -Path "target\*.jar" | Select-Object -First 1
+              if ($NEW_JAR) {
+                  Copy-Item -Path $NEW_JAR.FullName -Destination $DEPLOY_DIR -Force
+                  Write-Output "✅ Déployé: $($NEW_JAR.Name) -> $DEPLOY_DIR"
+              } else {
+                  throw "❌ Aucun fichier JAR trouvé dans target/"
+              }
+
+              Write-Output "🔄 Démarrage du service $SERVICE_NAME..."
+              C:\nssm\win64\nssm.exe start $SERVICE_NAME
+              Start-Sleep -Seconds 2
+
+              Write-Output "📊 Statut du service:"
+              C:\nssm\win64\nssm.exe status $SERVICE_NAME
+
+              Write-Output "`n✅ Déploiement terminé avec succès!"
+          }
+          catch {
+              Write-Output "❌ Erreur lors du déploiement: $($_.Exception.Message)"
+              exit 1
+          }
