@@ -38,7 +38,7 @@ jobs:
 
       # Étape 4: Déployer le JAR (localement sur le serveur Windows)
       - name: Deploy JAR locally
-        shell: pwsh
+        shell: powershell
         run: |
           try {
               # Chemins (issus de tes secrets)
