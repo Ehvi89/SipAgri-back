@@ -32,8 +32,8 @@ jobs:
         run: mvn -B package --file pom.xml
         # L'option -B est pour le mode batch (non interactif)
 
-      # Étape 4: Déployer le JAR sur le serveur Windows via SCP/SSH
-      - name: Deploy to Windows Server
+      # Étape 4: Copier le JAR vers le dossier TEMP du serveur
+      - name: Copy JAR to Temp Directory
         uses: appleboy/scp-action@v0.1.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -41,12 +41,11 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           source: "target/*.jar"
-          target: ${{ secrets.SERVER_JAR_PATH }}
-          # 'strip_components' retire le dossier 'target/' du chemin
-          strip_components: 1 
-
-      # Étape 5: Redémarrer le service Windows avec NSSM
-      - name: Restart Windows Service
+          target: "/tmp/"
+          strip_components: 1
+      
+      # Étape 5: Déplacer, archiver et redémarrer
+      - name: Deploy, Archive and Restart Service
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -54,11 +53,55 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           script: |
-            # Arrêter le service NSSM
-            nssm stop "${{ secrets.NSSM_SERVICE_NAME }}"
-            # Attendre un peu pour être sûr qu'il soit bien arrêté
-            Start-Sleep -Seconds 5
-            # Redémarrer le service NSSM
-            nssm start "${{ secrets.NSSM_SERVICE_NAME }}"
-            # Vérifier le statut du service
-            nssm status "${{ secrets.NSSM_SERVICE_NAME }}"
+            # Chemins (NOTE: /tmp/ sur Windows est en fait C:\Windows\Temp\)
+            $JAR_SOURCE = "C:\Windows\Temp\*.jar"  # Chemin Windows pour /tmp/
+            $DEPLOY_DIR = "${{ secrets.SERVER_JAR_PATH }}"
+            $ARCHIVE_DIR = "$DEPLOY_DIR\MAJ"
+            $SERVICE_NAME = "${{ secrets.NSSM_SERVICE_NAME }}"
+                $DATE = Get-Date -Format "yyyy.MM.dd"
+                $TODAY_ARCHIVE = "$ARCHIVE_DIR\$DATE"
+                
+                # Création des dossiers
+                New-Item -ItemType Directory -Path $ARCHIVE_DIR -Force -ErrorAction SilentlyContinue
+                New-Item -ItemType Directory -Path $TODAY_ARCHIVE -Force -ErrorAction SilentlyContinue
+                
+                Write-Output "⏹️  Arrêt du service..."
+                nssm stop $SERVICE_NAME
+                Start-Sleep -Seconds 5
+                
+                # Archivage des anciens JAR
+                $OLD_JARS = Get-ChildItem -Path $DEPLOY_DIR -Filter "*.jar" -ErrorAction SilentlyContinue
+                if ($OLD_JARS) {
+                    Write-Output "📦 Archivage des anciennes versions..."
+                    foreach ($JAR in $OLD_JARS) {
+                        $ARCHIVE_PATH = "$TODAY_ARCHIVE\$($JAR.Name)"
+                        Move-Item -Path $JAR.FullName -Destination $ARCHIVE_PATH -Force
+                        Write-Output "✅ Archivé: $($JAR.Name)"
+                    }
+                }
+                
+                # Déploiement du nouveau JAR
+                Write-Output "🚀 Déploiement de la nouvelle version..."
+                $NEW_JAR = Get-ChildItem -Path $JAR_SOURCE
+                if ($NEW_JAR) {
+                    Move-Item -Path $NEW_JAR.FullName -Destination $DEPLOY_DIR -Force
+                    Write-Output "✅ Déployé: $($NEW_JAR.Name)"
+                } else {
+                    throw "❌ Aucun fichier JAR trouvé dans /tmp/"
+                }
+                
+                # Redémarrage du service
+                Write-Output "🔄 Démarrage du service..."
+                nssm start $SERVICE_NAME
+                Start-Sleep -Seconds 2
+                
+                # Vérification finale
+                Write-Output "📊 Statut du service:"
+                nssm status $SERVICE_NAME
+                
+                Write-Output "`n✅ Déploiement terminé avec succès!"
+                
+            } catch {
+                Write-Output "❌ Erreur lors du déploiement: $($_.Exception.Message)"
+                exit 1
+            }
