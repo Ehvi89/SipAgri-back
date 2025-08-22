@@ -48,38 +48,38 @@ jobs:
               $DATE         = Get-Date -Format "yyyy.MM.dd"
               $TODAY_ARCHIVE = "$ARCHIVE_DIR\$DATE"
 
-              Write-Output "📁 Création des dossiers d'archive..."
+              Write-Output "Creation des dossiers d'archive..."
               New-Item -ItemType Directory -Path $TODAY_ARCHIVE -Force -ErrorAction SilentlyContinue
 
-              Write-Output "⏹️  Arrêt du service $SERVICE_NAME..."
+              Write-Output "Arret du service $SERVICE_NAME..."
               C:\nssm\win64\nssm.exe stop $SERVICE_NAME
               Start-Sleep -Seconds 5
 
-              Write-Output "📦 Archivage des anciens JAR..."
+              Write-Output "Archivage des anciens JAR..."
               $OLD_JARS = Get-ChildItem -Path $DEPLOY_DIR -Filter "*.jar" -ErrorAction SilentlyContinue
               foreach ($JAR in $OLD_JARS) {
                   Move-Item -Path $JAR.FullName -Destination "$TODAY_ARCHIVE\$($JAR.Name)" -Force
               }
 
-              Write-Output "🚀 Déploiement de la nouvelle version..."
+              Write-Output "Deploiement de la nouvelle version..."
               $NEW_JAR = Get-ChildItem -Path "target\*.jar" | Select-Object -First 1
               if ($NEW_JAR) {
                   Copy-Item -Path $NEW_JAR.FullName -Destination $DEPLOY_DIR -Force
-                  Write-Output "✅ Déployé: $($NEW_JAR.Name) -> $DEPLOY_DIR"
+                  Write-Output "Deploye: $($NEW_JAR.Name) -> $DEPLOY_DIR"
               } else {
-                  throw "❌ Aucun fichier JAR trouvé dans target/"
+                  throw "Aucun fichier JAR trouve dans target/"
               }
 
-              Write-Output "🔄 Démarrage du service $SERVICE_NAME..."
+              Write-Output "Demarrage du service $SERVICE_NAME..."
               C:\nssm\win64\nssm.exe start $SERVICE_NAME
               Start-Sleep -Seconds 2
 
-              Write-Output "📊 Statut du service:"
+              Write-Output "Statut du service:"
               C:\nssm\win64\nssm.exe status $SERVICE_NAME
 
-              Write-Output "`n✅ Déploiement terminé avec succès!"
+              Write-Output "`nDéploiement terminé avec succes!"
           }
           catch {
-              Write-Output "❌ Erreur lors du déploiement: $($_.Exception.Message)"
+              Write-Output "Erreur lors du déploiement: $($_.Exception.Message)"
               exit 1
           }
