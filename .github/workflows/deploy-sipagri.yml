@@ -53,7 +53,7 @@ jobs:
 
               Write-Output "Arret du service $SERVICE_NAME..."
               C:\nssm\win64\nssm.exe stop $SERVICE_NAME
-              Start-Sleep -Seconds 5
+              Start-Sleep -Seconds 15
 
               Write-Output "Archivage des anciens JAR..."
               $OLD_JARS = Get-ChildItem -Path $DEPLOY_DIR -Filter "*.jar" -ErrorAction SilentlyContinue
