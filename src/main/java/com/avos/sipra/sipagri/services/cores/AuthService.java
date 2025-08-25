@@ -8,4 +8,6 @@ public interface AuthService {
     void validatePasswordResetToken(String token);
 
     void changeUserPassword(SupervisorDTO supervisor, String newPassword);
+
+    SupervisorDTO registerUser(SupervisorDTO usersDTO);
 }

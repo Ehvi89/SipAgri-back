@@ -11,6 +11,7 @@ import com.avos.sipra.sipagri.services.dtos.PasswordResetDto;
 import com.avos.sipra.sipagri.services.dtos.SupervisorDTO;
 import com.avos.sipra.sipagri.services.mappers.SupervisorMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -69,24 +71,33 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<SupervisorDTO> createUser(@RequestBody SupervisorDTO usersDTO) {
-        SupervisorDTO createdSupervisor = supervisorService.save(usersDTO);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdSupervisor);
+        SupervisorDTO supervisor = supervisorService.findByEmail(usersDTO.getEmail());
+        if (supervisor == null) {
+            SupervisorDTO createdSupervisor = authService.registerUser(usersDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdSupervisor);
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, Object>> forgotPassword(@RequestBody String email) {
         SupervisorDTO usersDTO = supervisorService.findByEmail(email);
+//        log.info("found supervisor: {}, for : {}", usersDTO, email);
 
-        String token = UUID.randomUUID().toString();
-        authService.createPasswordResetTokenForUser(usersDTO, token);
+        if (usersDTO != null) {
+            String token = UUID.randomUUID().toString();
+            authService.createPasswordResetTokenForUser(usersDTO, token);
 
-        return ResponseEntity.ok()
-                .body(Map.of(
-                        "status", HttpStatus.OK.value(),
-                        "message", "Email de réinitialisation envoyé",
-                        "timestamp", LocalDateTime.now()
-                ));
+            return ResponseEntity.ok()
+                    .body(Map.of(
+                            "status", HttpStatus.OK.value(),
+                            "message", "Email de réinitialisation envoyé",
+                            "timestamp", LocalDateTime.now()
+                    ));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PostMapping("/reset-password")

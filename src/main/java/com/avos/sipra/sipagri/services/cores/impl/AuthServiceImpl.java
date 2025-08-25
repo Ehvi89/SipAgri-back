@@ -6,6 +6,7 @@ import com.avos.sipra.sipagri.services.cores.AuthService;
 import com.avos.sipra.sipagri.services.cores.SupervisorService;
 import com.avos.sipra.sipagri.services.dtos.SupervisorDTO;
 import com.avos.sipra.sipagri.services.mappers.SupervisorMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -37,6 +39,13 @@ public class AuthServiceImpl implements AuthService {
         this.supervisorService = supervisorService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
+
+    public SupervisorDTO registerUser(SupervisorDTO supervisorDTO) {
+        String mdpCrypter = bCryptPasswordEncoder.encode(supervisorDTO.getPassword());
+        supervisorDTO.setPassword(mdpCrypter);
+        return supervisorService.save(supervisorDTO);
+    }
+
     public void createPasswordResetTokenForUser(SupervisorDTO userDto, String token) {
         // 1. Recherche du token existant
         PasswordResetToken myToken = tokenRepository.findBySupervisor(supervisorMapper.toEntity(userDto));
@@ -53,7 +62,8 @@ public class AuthServiceImpl implements AuthService {
         tokenRepository.save(myToken);
 
         // 4. Envoyer l'email
-        sendResetEmail(userDto, token);
+//        sendResetEmail(userDto, token);
+        log.info("Created Password Reset Token: {}", myToken.getToken());
     }
 
     private void sendResetEmail(SupervisorDTO usersDTO, String token) {
