@@ -51,6 +51,12 @@ public class SupervisorServiceImpl implements SupervisorService {
     }
 
     @Override
+    public SupervisorDTO findByEmail(String email) {
+        Optional<Supervisor> supervisor = supervisorRepository.findByEmail(email);
+        return supervisor.map(supervisorMapper::toDTO).orElse(null);
+    }
+
+    @Override
     public List<SupervisorDTO> findAll() {
         List<Supervisor> supervisors = supervisorRepository.findAll();
         List<SupervisorDTO> supervisorDTOS = new ArrayList<>();
