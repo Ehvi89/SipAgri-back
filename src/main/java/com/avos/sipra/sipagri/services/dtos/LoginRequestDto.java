@@ -5,18 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SupervisorDTO {
-    private Long id;
-
-    private String firstname;
-
-    private String lastname;
-
+@Builder
+public class LoginRequestDto implements Serializable {
     private String email;
-
     private String password;
 }
