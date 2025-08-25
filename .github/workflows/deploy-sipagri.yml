@@ -34,7 +34,7 @@ jobs:
       # Étape 3: Builder le projet avec Maven (AVEC profil prod et skip des tests d'intégration)
       - name: Build with Maven
         run: |
-          mvn clean package -Pprod -Dspring.profiles.active=test
+          mvn clean package -Pprod
         env:
           # Variables d'environnement pour les tests
           SPRING_PROFILES_ACTIVE: test
