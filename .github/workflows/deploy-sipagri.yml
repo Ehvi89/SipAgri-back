@@ -8,9 +8,8 @@ on:
 
 jobs:
   build-and-deploy:
-    # 👉 Ici on utilise le runner que tu as installé sur ton Windows 10
     runs-on: self-hosted
-    concurrency: 
+    concurrency:
       group: production-deploy
       cancel-in-progress: false
 
@@ -32,9 +31,18 @@ jobs:
         with:
           maven-version: 3.9.9
 
-      # Étape 3: Builder le projet avec Maven
+      # Étape 3: Builder le projet avec Maven (AVEC profil prod et skip des tests d'intégration)
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: |
+          mvn clean package -Pprod -Dspring.profiles.active=test
+        env:
+          # Variables d'environnement pour les tests
+          SPRING_PROFILES_ACTIVE: test
+
+      # Alternative si vous voulez garder les tests unitaires mais skip les tests d'intégration
+      # - name: Build with Maven (alternative)
+      #   run: |
+      #     mvn clean package -Pprod -DskipITs=true -Dspring.profiles.active=test
 
       # Étape 4: Déployer le JAR (localement sur le serveur Windows)
       - name: Deploy JAR locally
