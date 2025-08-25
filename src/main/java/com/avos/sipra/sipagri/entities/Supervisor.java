@@ -24,6 +24,10 @@ public class Supervisor {
     
     private String lastname;
 
+    private String email;
+
+    private String password;
+
     @OneToMany(mappedBy = "supervisor")
     private List<Planter> planters;
 }
