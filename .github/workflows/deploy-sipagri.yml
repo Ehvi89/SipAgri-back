@@ -8,9 +8,8 @@ on:
 
 jobs:
   build-and-deploy:
-    # 👉 Ici on utilise le runner que tu as installé sur ton Windows 10
     runs-on: self-hosted
-    concurrency: 
+    concurrency:
       group: production-deploy
       cancel-in-progress: false
 
@@ -34,7 +33,17 @@ jobs:
 
       # Étape 3: Builder le projet avec Maven
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: |
+          mvn clean test -Ptest
+          mvn clean package -Pprod -DskipTests=true
+        env:
+          # Variables d'environnement pour les tests
+          SPRING_PROFILES_ACTIVE: test
+
+      # Alternative si vous voulez garder les tests unitaires mais skip les tests d'intégration
+      # - name: Build with Maven (alternative)
+      #   run: |
+      #     mvn clean package -Pprod -DskipITs=true -Dspring.profiles.active=test
 
       # Étape 4: Déployer le JAR (localement sur le serveur Windows)
       - name: Deploy JAR locally
@@ -59,6 +68,15 @@ jobs:
               $OLD_JARS = Get-ChildItem -Path $DEPLOY_DIR -Filter "*.jar" -ErrorAction SilentlyContinue
               foreach ($JAR in $OLD_JARS) {
                   Move-Item -Path $JAR.FullName -Destination "$TODAY_ARCHIVE\$($JAR.Name)" -Force
+              }
+          
+              Write-Output "Deploiement de l'environement'"
+              $NEW_ENV = Get-ChildItem -Path ".env" | Select-Object -First 1
+              if ($NEW_ENV) {
+                  Copy-Item -Path $NEW_ENV.FullName -Destination $DEPLOY_DIR -Force
+                  Write-Output "Deploye: $($NEW_ENV.Name) -> $DEPLOY_DIR"
+              } else {
+                  throw "Aucun fichier .ENV trouve"
               }
 
               Write-Output "Deploiement de la nouvelle version..."

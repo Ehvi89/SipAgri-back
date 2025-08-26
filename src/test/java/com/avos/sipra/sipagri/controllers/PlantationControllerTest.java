@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.controllers;
 
+import com.avos.sipra.sipagri.security.TestSecurityConfig;
 import com.avos.sipra.sipagri.services.cores.PlantationService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.PlantationDTO;
@@ -9,8 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.data.domain.Pageable;
 
@@ -21,6 +25,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
+@Import(TestSecurityConfig.class)
 @WebMvcTest(PlantationController.class)
 class PlantationControllerTest {
 
