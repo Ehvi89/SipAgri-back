@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/kits")
@@ -27,7 +28,7 @@ public class KitController {
     ) {
         final Pageable pageable = PageRequest.of(page, size);
         PaginationResponseDTO<KitDTO> response = kitService.findAllPaged(pageable);
-        if (response.getData() == null) {
+        if (response.getData() == null || response.getData().isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(response);
@@ -79,12 +80,21 @@ public class KitController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<KitDTO> delete(@PathVariable Long id) {
-        KitDTO kit = kitService.findOne(id);
-        if (kit == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            KitDTO kit = kitService.findOne(id);
+            if (kit == null) {
+                return ResponseEntity.notFound().build();
+            }
+            kitService.delete(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            // Retourne une réponse plus spécifique
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "message", "Erreur lors de la suppression du kit",
+                            "error", e.getMessage()
+                    ));
         }
-        kitService.delete(id);
-        return ResponseEntity.ok().build();
     }
 }
