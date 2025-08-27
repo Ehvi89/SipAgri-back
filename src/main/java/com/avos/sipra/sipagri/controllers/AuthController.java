@@ -127,6 +127,16 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/email-exist")
+    public ResponseEntity<SupervisorDTO> checkEmailExist(@RequestBody String email) {
+        SupervisorDTO supervisor = supervisorService.findByEmail(email);
+        if (supervisor != null) {
+            return ResponseEntity.ok(supervisor);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @RequestMapping("/error")
     public ResponseEntity<Map<String, Object>> handleError(HttpServletRequest request) {
         HttpStatus httpStatus = getStatus(request);
