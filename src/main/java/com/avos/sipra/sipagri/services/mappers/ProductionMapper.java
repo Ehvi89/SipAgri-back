@@ -14,6 +14,7 @@ public class ProductionMapper {
                 .productionInKg(production.getProductionInKg())
                 .purchasePrice(production.getPurchasePrice())
                 .mustBePaid(production.getMustBePaid())
+                .year(production.getYear())
                 .build();
     }
 
@@ -24,6 +25,7 @@ public class ProductionMapper {
                 .productionInKg(productionDTO.getProductionInKg())
                 .purchasePrice(productionDTO.getPurchasePrice())
                 .mustBePaid(productionDTO.getMustBePaid())
+                .year(productionDTO.getYear())
                 .build();
     }
 
@@ -39,6 +41,9 @@ public class ProductionMapper {
         }
         if (productionDTO.getMustBePaid() != null) {
             production.setMustBePaid(productionDTO.getMustBePaid());
+        }
+        if (productionDTO.getYear() != null) {
+            production.setYear(productionDTO.getYear());
         }
         return production;
     }

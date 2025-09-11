@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -29,4 +31,6 @@ public class Production {
 
     @Column(name = "must_be_paid")
     private Boolean mustBePaid;
+
+    private Date year;
 }

@@ -1,13 +1,17 @@
 package com.avos.sipra.sipagri.services.cores.impl;
 
 import com.avos.sipra.sipagri.entities.Plantation;
+import com.avos.sipra.sipagri.entities.Planter;
 import com.avos.sipra.sipagri.repositories.PlantationRepository;
+import com.avos.sipra.sipagri.repositories.PlanterRepository;
 import com.avos.sipra.sipagri.services.cores.CalculationService;
 import com.avos.sipra.sipagri.services.cores.PlantationService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.PlantationDTO;
+import com.avos.sipra.sipagri.services.dtos.PlanterDTO;
 import com.avos.sipra.sipagri.services.dtos.ProductionDTO;
 import com.avos.sipra.sipagri.services.mappers.PlantationMapper;
+import com.avos.sipra.sipagri.services.mappers.PlanterMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,11 +26,15 @@ public class PlantationServiceImpl implements PlantationService {
     private final PlantationMapper plantationMapper;
     private final PlantationRepository plantationRepository;
     private final CalculationService calculationService;
+    private final PlanterRepository planterRepository;
+    private final PlanterMapper planterMapper;
 
-    public PlantationServiceImpl(PlantationMapper plantationMapper, PlantationRepository plantationRepository, CalculationService calculationService) {
+    public PlantationServiceImpl(PlantationMapper plantationMapper, PlantationRepository plantationRepository, CalculationService calculationService, PlanterRepository planterRepository, PlanterMapper planterMapper) {
         this.plantationMapper = plantationMapper;
         this.plantationRepository = plantationRepository;
         this.calculationService = calculationService;
+        this.planterRepository = planterRepository;
+        this.planterMapper = planterMapper;
     }
 
     @Override
@@ -42,6 +50,12 @@ public class PlantationServiceImpl implements PlantationService {
         }
 
         plantation = plantationRepository.save(plantation);
+
+        // Mettre à jour la liste des plantations du planter
+        Planter planter = planterRepository.getReferenceById(plantation.getPlanterId());
+        planter.getPlantations().add(plantation);
+        planterRepository.save(planter);
+
         return plantationMapper.toDTO(plantation);
     }
 

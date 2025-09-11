@@ -79,8 +79,8 @@ public class PlantationController {
         return ResponseEntity.accepted().body(plantationDTO);
     }
 
-    @DeleteMapping
-    public ResponseEntity<PlantationDTO> deletePlantation(@RequestParam Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<PlantationDTO> deletePlantation(@PathVariable Long id){
         PlantationDTO plantationDTO = plantationService.findOne(id);
         if(plantationDTO == null){
             return ResponseEntity.notFound().build();

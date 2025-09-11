@@ -21,11 +21,14 @@ public class Plantation {
     @SequenceGenerator(name = "plantation_seq", allocationSize = 1)
     private Long id;
 
+    private String name;
+
+    private String description;
+
     @Column(name = "farmed_area")
     private Double farmedArea;
 
     @Embedded
-    @Column(name = "gps_location", unique = true)
     private Location gpsLocation;
 
     @Column(name = "planter_id")

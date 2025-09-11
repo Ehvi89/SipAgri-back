@@ -24,6 +24,7 @@ public class PlanterMapper {
                 .childrenNumber(planter.getChildrenNumber())
                 .maritalStatus(planter.getMaritalStatus())
                 .gender(planter.getGender())
+                .phoneNumber(planter.getPhoneNumber())
                 .village(planter.getVillage())
                 .supervisor(supervisorMapper.toDTO(planter.getSupervisor()))
                 .plantations(planter.getPlantations() != null ? 
@@ -44,6 +45,7 @@ public class PlanterMapper {
                 .childrenNumber(planterDTO.getChildrenNumber())
                 .maritalStatus(planterDTO.getMaritalStatus())
                 .gender(planterDTO.getGender())
+                .phoneNumber(planterDTO.getPhoneNumber())
                 .village(planterDTO.getVillage())
                 .supervisor(supervisorMapper.toEntity(planterDTO.getSupervisor()))
                 .plantations(planterDTO.getPlantations() != null ?
@@ -73,6 +75,9 @@ public class PlanterMapper {
         }
         if (planterDTO.getGender() != null) {
             planter.setGender(planterDTO.getGender());
+        }
+        if (planterDTO.getPhoneNumber() != null) {
+            planter.setPhoneNumber(planterDTO.getPhoneNumber());
         }
         if (planterDTO.getVillage() != null) {
             planter.setVillage(planterDTO.getVillage());

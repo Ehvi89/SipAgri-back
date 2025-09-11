@@ -13,6 +13,10 @@ import lombok.NoArgsConstructor;
 public class PlantationDTO {
     private Long id;
 
+    private String name;
+
+    private String description;
+
     private Location gpsLocation;
 
     private Double farmedArea;

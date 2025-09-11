@@ -26,6 +26,8 @@ public class PlantationMapper {
     public Plantation toEntity(PlantationDTO plantationDTO) {
         return Plantation.builder()
                 .id(plantationDTO.getId())
+                .name(plantationDTO.getName())
+                .description(plantationDTO.getDescription())
                 .gpsLocation(plantationDTO.getGpsLocation())
                 .farmedArea(plantationDTO.getFarmedArea())
                 .productions(plantationDTO.getProductions() != null ? 
@@ -41,6 +43,8 @@ public class PlantationMapper {
     public PlantationDTO toDTO(Plantation plantation) {
         return PlantationDTO.builder()
                 .id(plantation.getId())
+                .name(plantation.getName())
+                .description(plantation.getDescription())
                 .gpsLocation(plantation.getGpsLocation())
                 .farmedArea(plantation.getFarmedArea())
                 .productions(plantation.getProductions() != null ? 
@@ -54,6 +58,12 @@ public class PlantationMapper {
     }
 
     public Plantation partialUpdate(Plantation plantation, PlantationDTO plantationDTO) {
+        if (plantationDTO.getName() != null) {
+            plantation.setName(plantationDTO.getName());
+        }
+        if (plantationDTO.getDescription() != null) {
+            plantation.setDescription(plantationDTO.getDescription());
+        }
         if (plantationDTO.getGpsLocation() != null) {
             plantation.setGpsLocation(plantationDTO.getGpsLocation());
         }
