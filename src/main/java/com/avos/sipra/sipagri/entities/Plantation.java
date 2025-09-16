@@ -34,7 +34,7 @@ public class Plantation {
     @Column(name = "planter_id")
     private Long planterId;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "plantation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Production> productions;
 
     @ManyToOne(optional = false)

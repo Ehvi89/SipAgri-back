@@ -24,20 +24,29 @@ public class PlantationMapper {
     }
 
     public Plantation toEntity(PlantationDTO plantationDTO) {
-        return Plantation.builder()
+        Plantation plantation = Plantation.builder()
                 .id(plantationDTO.getId())
                 .name(plantationDTO.getName())
                 .description(plantationDTO.getDescription())
                 .gpsLocation(plantationDTO.getGpsLocation())
                 .farmedArea(plantationDTO.getFarmedArea())
-                .productions(plantationDTO.getProductions() != null ? 
-                    plantationDTO.getProductions().stream()
-                        .map(productionMapper::toEntity)
-                        .collect(Collectors.toCollection(ArrayList::new)) : null
-                    )
                 .planterId(plantationDTO.getPlanterId())
                 .kit(kitMapper.toEntity(plantationDTO.getKit()))
                 .build();
+
+        // Gérer les productions séparément
+        if (plantationDTO.getProductions() != null) {
+            List<Production> productions = plantationDTO.getProductions().stream()
+                    .map(productionDTO -> {
+                        Production production = productionMapper.toEntity(productionDTO);
+                        production.setPlantation(plantation); // Définir la relation parent
+                        return production;
+                    })
+                    .collect(Collectors.toCollection(ArrayList::new));
+            plantation.setProductions(productions);
+        }
+
+        return plantation;
     }
 
     public PlantationDTO toDTO(Plantation plantation) {
@@ -47,11 +56,12 @@ public class PlantationMapper {
                 .description(plantation.getDescription())
                 .gpsLocation(plantation.getGpsLocation())
                 .farmedArea(plantation.getFarmedArea())
-                .productions(plantation.getProductions() != null ? 
-                    plantation.getProductions().stream()
-                        .map(productionMapper::toDTO)
-                        .collect(Collectors.toCollection(ArrayList::new)) : null
-                    )
+                // Cette ligne ne causera plus de boucle car ProductionMapper ne mappe plus plantation
+                .productions(plantation.getProductions() != null ?
+                        plantation.getProductions().stream()
+                                .map(productionMapper::toDTO)
+                                .collect(Collectors.toCollection(ArrayList::new)) : null
+                )
                 .planterId(plantation.getPlanterId())
                 .kit(kitMapper.toDTO(plantation.getKit()))
                 .build();
@@ -99,7 +109,7 @@ public class PlantationMapper {
             } else {
                 // Nouvelle production
                 Production newProduction = productionMapper.toEntity(dto);
-                newProduction.setPlantationId(plantation.getId());
+                newProduction.setPlantation(plantation);
                 plantation.getProductions().add(newProduction);
             }
         }

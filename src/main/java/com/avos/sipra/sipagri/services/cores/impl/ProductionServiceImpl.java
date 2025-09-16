@@ -1,6 +1,8 @@
 package com.avos.sipra.sipagri.services.cores.impl;
 
+import com.avos.sipra.sipagri.entities.Plantation;
 import com.avos.sipra.sipagri.entities.Production;
+import com.avos.sipra.sipagri.repositories.PlantationRepository;
 import com.avos.sipra.sipagri.repositories.ProductionRepository;
 import com.avos.sipra.sipagri.services.cores.CalculationService;
 import com.avos.sipra.sipagri.services.cores.ProductionService;
@@ -21,13 +23,15 @@ public class ProductionServiceImpl implements ProductionService{
     private final ProductionMapper productionMapper;
     private final ProductionRepository productionRepository;
     private final CalculationService calculationService;
+    private final PlantationRepository plantationRepository;
 
     public ProductionServiceImpl(ProductionMapper productionMapper,
                                  ProductionRepository productionRepository,
-                                 CalculationService calculationService) {
+                                 CalculationService calculationService, PlantationRepository plantationRepository) {
         this.productionMapper = productionMapper;
         this.productionRepository = productionRepository;
         this.calculationService = calculationService;
+        this.plantationRepository = plantationRepository;
     }
 
 
@@ -48,6 +52,9 @@ public class ProductionServiceImpl implements ProductionService{
                 production = productionRepository.save(production);
             }
         }
+        Plantation plantation = plantationRepository.getReferenceById(production.getPlantation().getId());
+        plantation.getProductions().add(production);
+        plantationRepository.save(plantation);
 
         return productionMapper.toDTO(production);
     }
@@ -62,7 +69,7 @@ public class ProductionServiceImpl implements ProductionService{
         }
 
         // Recalculer les valeurs basées sur productionInKg
-        productionDTO = calculationService.calculateMustBePaid(productionDTO, productionDTO.getPlantationId());
+        productionDTO = calculationService.calculateProductionValues(productionDTO);
 
         // Conversion en entité et sauvegarde
         Production production = productionMapper.toEntity(productionDTO);

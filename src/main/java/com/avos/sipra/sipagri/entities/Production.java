@@ -20,8 +20,9 @@ public class Production {
     @SequenceGenerator(name = "production_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "plantation_id")
-    private Long plantationId;
+    @ManyToOne
+    @JoinColumn(name = "plantation_id")
+    private Plantation plantation;
 
     @Column(name = "prod_in_kg", nullable = false)
     private Double productionInKg;

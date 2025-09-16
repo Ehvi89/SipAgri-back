@@ -14,10 +14,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Location {
-    @Column(precision = 10, scale = 4)
-    BigDecimal latitude;
-    @Column(precision = 10, scale = 4)
-    BigDecimal longitude;
+    Double latitude;
+    Double longitude;
     @AttributeOverride(name = "name", column = @Column(name = "display_name", unique=true))
     String display_name;
 }
