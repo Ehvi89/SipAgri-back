@@ -35,7 +35,7 @@ public class SupervisorServiceImpl implements SupervisorService {
     @Override
     public SupervisorDTO update(SupervisorDTO supervisorDTO) {
         if (Objects.isNull(supervisorDTO)) {throw new IllegalArgumentException("SupervisorDTO is null");}
-        if (!existsById(supervisorDTO.getId())) {throw new NullPointerException("ID cannot be null");}
+        if (Boolean.FALSE.equals(existsById(supervisorDTO.getId()))) {throw new NullPointerException("ID cannot be null");}
         return save(supervisorDTO);
     }
 
@@ -70,6 +70,17 @@ public class SupervisorServiceImpl implements SupervisorService {
     public PaginationResponseDTO<SupervisorDTO> findAllPaged(Pageable pageable) {
         final Page<Supervisor> page = supervisorRepository.findAll(pageable);
 
+        return getSupervisorDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<SupervisorDTO> findAllPagedByParams(Pageable pageable, String params) {
+        final Page<Supervisor> page = supervisorRepository.findSupervisorsByFirstnameContainingIgnoreCaseOrLastnameContainingIgnoreCase(pageable, params, params);
+
+        return getSupervisorDTOPaginationResponseDTO(page);
+    }
+
+    private PaginationResponseDTO<SupervisorDTO> getSupervisorDTOPaginationResponseDTO(Page<Supervisor> page) {
         final int currentPage = page.getNumber();
         final int totalPage = page.getTotalPages();
         final int totalElements = (int) page.getTotalElements();
@@ -85,7 +96,7 @@ public class SupervisorServiceImpl implements SupervisorService {
     @Override
     public SupervisorDTO partialUpdate(SupervisorDTO supervisorDTO) {
         if (Objects.isNull(supervisorDTO)) {throw new IllegalArgumentException("SupervisorDTO is null");}
-        if (!existsById(supervisorDTO.getId())) {throw new NullPointerException("SupervisorDTO not found");}
+        if (Boolean.FALSE.equals(existsById(supervisorDTO.getId()))) {throw new NullPointerException("SupervisorDTO not found");}
         Optional<Supervisor> supervisorOptional = supervisorRepository.findById(supervisorDTO.getId());
         if (supervisorOptional.isPresent()) {
             Supervisor supervisor = supervisorMapper.partialUpdate(supervisorOptional.get(), supervisorDTO);

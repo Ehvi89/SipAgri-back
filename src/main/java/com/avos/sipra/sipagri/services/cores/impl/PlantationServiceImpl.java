@@ -8,10 +8,8 @@ import com.avos.sipra.sipagri.services.cores.CalculationService;
 import com.avos.sipra.sipagri.services.cores.PlantationService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.PlantationDTO;
-import com.avos.sipra.sipagri.services.dtos.PlanterDTO;
 import com.avos.sipra.sipagri.services.dtos.ProductionDTO;
 import com.avos.sipra.sipagri.services.mappers.PlantationMapper;
-import com.avos.sipra.sipagri.services.mappers.PlanterMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,14 +25,15 @@ public class PlantationServiceImpl implements PlantationService {
     private final PlantationRepository plantationRepository;
     private final CalculationService calculationService;
     private final PlanterRepository planterRepository;
-    private final PlanterMapper planterMapper;
 
-    public PlantationServiceImpl(PlantationMapper plantationMapper, PlantationRepository plantationRepository, CalculationService calculationService, PlanterRepository planterRepository, PlanterMapper planterMapper) {
+    public PlantationServiceImpl(PlantationMapper plantationMapper,
+                                 PlantationRepository plantationRepository,
+                                 CalculationService calculationService,
+                                 PlanterRepository planterRepository) {
         this.plantationMapper = plantationMapper;
         this.plantationRepository = plantationRepository;
         this.calculationService = calculationService;
         this.planterRepository = planterRepository;
-        this.planterMapper = planterMapper;
     }
 
     @Override
@@ -103,6 +102,17 @@ public class PlantationServiceImpl implements PlantationService {
     public PaginationResponseDTO<PlantationDTO> findAllPaged(Pageable pageable) {
         Page<Plantation> page =  plantationRepository.findAll(pageable);
 
+        return getPlantationDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<PlantationDTO> findAllPagedByParams(Pageable pageable, String params) {
+        Page<Plantation> page =  plantationRepository.findPlantationsByNameContainingIgnoreCase(pageable, params);
+
+        return getPlantationDTOPaginationResponseDTO(page);
+    }
+
+    private PaginationResponseDTO<PlantationDTO> getPlantationDTOPaginationResponseDTO(Page<Plantation> page) {
         final int currentPage = page.getNumber();
         final int totalPages = page.getTotalPages();
         final int totalElements = (int) page.getTotalElements();

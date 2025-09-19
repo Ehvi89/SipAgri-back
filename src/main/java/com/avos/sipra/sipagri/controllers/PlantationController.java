@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.controllers;
 
+import com.avos.sipra.sipagri.annotations.XSSProtected;
 import com.avos.sipra.sipagri.services.cores.PlantationService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.PlantationDTO;
@@ -52,7 +53,22 @@ public class PlantationController {
         return ResponseEntity.ok().body(plantationDTOs);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<PaginationResponseDTO<PlantationDTO>> searchPlantations(
+            @RequestParam String search,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        PaginationResponseDTO<PlantationDTO> responseDTO = plantationService.findAllPagedByParams(pageable, search);
+        if (responseDTO.getData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @PostMapping
+    @XSSProtected
     public ResponseEntity<PlantationDTO> createPlantation(@RequestBody PlantationDTO dto){
         PlantationDTO plantationDTO = plantationService.save(dto);
         if(plantationDTO == null){
@@ -62,6 +78,7 @@ public class PlantationController {
     }
 
     @PutMapping
+    @XSSProtected
     public ResponseEntity<PlantationDTO> updatePlantation(@RequestBody PlantationDTO dto){
         PlantationDTO plantationDTO = plantationService.update(dto);
         if(plantationDTO == null){

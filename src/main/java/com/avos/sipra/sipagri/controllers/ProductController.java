@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.controllers;
 
+import com.avos.sipra.sipagri.annotations.XSSProtected;
 import com.avos.sipra.sipagri.services.cores.ProductService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.ProductDTO;
@@ -52,7 +53,22 @@ public class ProductController {
         return ResponseEntity.ok(productDTO);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<PaginationResponseDTO<ProductDTO>> searchProducts(
+            @RequestParam String search,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        PaginationResponseDTO<ProductDTO> responseDTO = productService.findAllPagedByParams(pageable, search);
+        if (responseDTO.getData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @PostMapping
+    @XSSProtected
     public ResponseEntity<ProductDTO> save(@RequestBody ProductDTO productDTO) {
         ProductDTO product = productService.save(productDTO);
         if (product == null) {
@@ -62,6 +78,7 @@ public class ProductController {
     }
 
     @PutMapping
+    @XSSProtected
     public ResponseEntity<ProductDTO> update(@RequestBody ProductDTO productDTO) {
         ProductDTO product = productService.update(productDTO);
         if (product == null) {
@@ -71,6 +88,7 @@ public class ProductController {
     }
 
     @PatchMapping
+    @XSSProtected
     public ResponseEntity<ProductDTO> patch(@RequestBody ProductDTO productDTO) {
         ProductDTO product = productService.partialUpdate(productDTO);
         if (product == null) {

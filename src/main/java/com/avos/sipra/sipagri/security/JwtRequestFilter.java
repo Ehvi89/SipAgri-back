@@ -59,15 +59,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             final String token = authHeader.substring(7);
 
             // Validation basique du token avant traitement
-            if (token == null || token.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Empty token");
+            if (token.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                 return;
             }
 
             final String username = jwtUtil.extractUsername(token);
 
             if (username == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token: no username");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                 return;
             }
 
@@ -89,7 +89,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
             logger.error("Authentication error", e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
             return;
         }
 
