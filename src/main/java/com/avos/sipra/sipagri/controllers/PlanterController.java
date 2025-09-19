@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.controllers;
 
+import com.avos.sipra.sipagri.annotations.XSSProtected;
 import com.avos.sipra.sipagri.services.cores.PlanterService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.PlanterDTO;
@@ -52,7 +53,22 @@ public class PlanterController {
         return ResponseEntity.ok(planterDTO);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<PaginationResponseDTO<PlanterDTO>> searchPlanters(
+            @RequestParam String search,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        PaginationResponseDTO<PlanterDTO> responseDTO = planterService.findAllPagedByParams(pageable, search);
+        if (responseDTO.getData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @PostMapping
+    @XSSProtected
     public ResponseEntity<PlanterDTO> createPlanter(@RequestBody PlanterDTO planterDTO) {
         PlanterDTO planter = planterService.save(planterDTO);
         if (planter == null) {
@@ -62,6 +78,7 @@ public class PlanterController {
     }
 
     @PutMapping
+    @XSSProtected
     public ResponseEntity<PlanterDTO> updatePlanter(@RequestBody PlanterDTO planterDTO) {
         PlanterDTO planter = planterService.update(planterDTO);
         if (planter == null) {
@@ -71,8 +88,9 @@ public class PlanterController {
     }
 
     @PatchMapping
+    @XSSProtected
     public ResponseEntity<PlanterDTO> patchPlanter(@RequestBody PlanterDTO planterDTO) {
-        PlanterDTO planter = planterService.update(planterDTO);
+        PlanterDTO planter = planterService.partialUpdate(planterDTO);
         if (planter == null) {
             return ResponseEntity.notFound().build();
         }

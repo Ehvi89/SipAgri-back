@@ -1,7 +1,9 @@
 package com.avos.sipra.sipagri.services.cores.impl;
 
 import com.avos.sipra.sipagri.entities.Plantation;
+import com.avos.sipra.sipagri.entities.Planter;
 import com.avos.sipra.sipagri.repositories.PlantationRepository;
+import com.avos.sipra.sipagri.repositories.PlanterRepository;
 import com.avos.sipra.sipagri.services.cores.CalculationService;
 import com.avos.sipra.sipagri.services.cores.PlantationService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
@@ -22,11 +24,16 @@ public class PlantationServiceImpl implements PlantationService {
     private final PlantationMapper plantationMapper;
     private final PlantationRepository plantationRepository;
     private final CalculationService calculationService;
+    private final PlanterRepository planterRepository;
 
-    public PlantationServiceImpl(PlantationMapper plantationMapper, PlantationRepository plantationRepository, CalculationService calculationService) {
+    public PlantationServiceImpl(PlantationMapper plantationMapper,
+                                 PlantationRepository plantationRepository,
+                                 CalculationService calculationService,
+                                 PlanterRepository planterRepository) {
         this.plantationMapper = plantationMapper;
         this.plantationRepository = plantationRepository;
         this.calculationService = calculationService;
+        this.planterRepository = planterRepository;
     }
 
     @Override
@@ -42,6 +49,12 @@ public class PlantationServiceImpl implements PlantationService {
         }
 
         plantation = plantationRepository.save(plantation);
+
+        // Mettre à jour la liste des plantations du planter
+        Planter planter = planterRepository.getReferenceById(plantation.getPlanterId());
+        planter.getPlantations().add(plantation);
+        planterRepository.save(planter);
+
         return plantationMapper.toDTO(plantation);
     }
 
@@ -89,6 +102,17 @@ public class PlantationServiceImpl implements PlantationService {
     public PaginationResponseDTO<PlantationDTO> findAllPaged(Pageable pageable) {
         Page<Plantation> page =  plantationRepository.findAll(pageable);
 
+        return getPlantationDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<PlantationDTO> findAllPagedByParams(Pageable pageable, String params) {
+        Page<Plantation> page =  plantationRepository.findPlantationsByNameContainingIgnoreCase(pageable, params);
+
+        return getPlantationDTOPaginationResponseDTO(page);
+    }
+
+    private PaginationResponseDTO<PlantationDTO> getPlantationDTOPaginationResponseDTO(Page<Plantation> page) {
         final int currentPage = page.getNumber();
         final int totalPages = page.getTotalPages();
         final int totalElements = (int) page.getTotalElements();

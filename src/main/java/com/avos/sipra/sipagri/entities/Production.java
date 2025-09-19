@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -18,8 +20,9 @@ public class Production {
     @SequenceGenerator(name = "production_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "plantation_id")
-    private Long plantationId;
+    @ManyToOne
+    @JoinColumn(name = "plantation_id")
+    private Plantation plantation;
 
     @Column(name = "prod_in_kg", nullable = false)
     private Double productionInKg;
@@ -29,4 +32,6 @@ public class Production {
 
     @Column(name = "must_be_paid")
     private Boolean mustBePaid;
+
+    private Date year;
 }

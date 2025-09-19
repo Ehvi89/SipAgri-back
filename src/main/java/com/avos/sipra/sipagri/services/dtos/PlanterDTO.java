@@ -24,6 +24,8 @@ public class PlanterDTO {
     private Date birthday; 
 
     private HumanGender gender;
+
+    private String phoneNumber;
     
     private MaritalStatus maritalStatus;
 

@@ -96,6 +96,17 @@ public class KitServiceImpl implements KitService {
     public PaginationResponseDTO<KitDTO> findAllPaged(Pageable pageable) {
         final Page<Kit> page = kitRepository.findAll(pageable);
 
+        return getKitDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<KitDTO> findAllPagedByParams(Pageable pageable, String params) {
+        final Page<Kit> page = kitRepository.findKitByName(pageable, params);
+
+        return getKitDTOPaginationResponseDTO(page);
+    }
+
+    private PaginationResponseDTO<KitDTO> getKitDTOPaginationResponseDTO(Page<Kit> page) {
         final int currentPage = page.getNumber();
         final int totalPages = page.getTotalPages();
         final int totalElements = (int) page.getTotalElements();

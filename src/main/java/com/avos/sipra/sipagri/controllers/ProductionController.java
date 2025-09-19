@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.controllers;
 
+import com.avos.sipra.sipagri.annotations.XSSProtected;
 import com.avos.sipra.sipagri.services.cores.ProductionService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.ProductionDTO;
@@ -52,7 +53,22 @@ public class ProductionController {
         return ResponseEntity.ok(productionDTO);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<PaginationResponseDTO<ProductionDTO>> searchProductions(
+            @RequestParam String search,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        PaginationResponseDTO<ProductionDTO> responseDTO = productionService.findAllPagedByParams(pageable, search);
+        if (responseDTO.getData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @PostMapping
+    @XSSProtected
     public ResponseEntity<ProductionDTO> save(@RequestBody ProductionDTO productionDTO) {
         ProductionDTO production = productionService.save(productionDTO);
         if (production == null) {
@@ -62,6 +78,7 @@ public class ProductionController {
     }
 
     @PutMapping
+    @XSSProtected
     public ResponseEntity<ProductionDTO> update(@RequestBody ProductionDTO productionDTO) {
         ProductionDTO production = productionService.update(productionDTO);
         if (production == null) {
@@ -71,6 +88,7 @@ public class ProductionController {
     }
 
     @PatchMapping
+    @XSSProtected
     public ResponseEntity<ProductionDTO> patch(@RequestBody ProductionDTO productionDTO) {
         ProductionDTO production = productionService.partialUpdate(productionDTO);
         if (production == null) {

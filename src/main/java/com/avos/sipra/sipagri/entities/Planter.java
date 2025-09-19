@@ -35,6 +35,8 @@ public class Planter {
     @Column(nullable = false)
     private HumanGender gender;
 
+    private String phoneNumber;
+
     @Column(name = "marital_status", nullable = false)
     private MaritalStatus maritalStatus;
 

@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.controllers;
 
+import com.avos.sipra.sipagri.annotations.XSSProtected;
 import com.avos.sipra.sipagri.services.cores.ParamsService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.ParamsDTO;
@@ -62,6 +63,7 @@ public class ParamsController {
     }
 
     @PostMapping
+    @XSSProtected
     public ResponseEntity<ParamsDTO> createParams(@RequestBody ParamsDTO paramsDTO) {
         ParamsDTO planter = planterService.save(paramsDTO);
         if (planter == null) {
@@ -71,6 +73,7 @@ public class ParamsController {
     }
 
     @PutMapping
+    @XSSProtected
     public ResponseEntity<ParamsDTO> updateParams(@RequestBody ParamsDTO paramsDTO) {
         ParamsDTO planter = planterService.update(paramsDTO);
         if (planter == null) {
@@ -80,8 +83,9 @@ public class ParamsController {
     }
 
     @PatchMapping
+    @XSSProtected
     public ResponseEntity<ParamsDTO> patchParams(@RequestBody ParamsDTO paramsDTO) {
-        ParamsDTO planter = planterService.update(paramsDTO);
+        ParamsDTO planter = planterService.partialUpdate(paramsDTO);
         if (planter == null) {
             return ResponseEntity.notFound().build();
         }

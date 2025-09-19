@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.controllers;
 
+import com.avos.sipra.sipagri.annotations.XSSProtected;
 import com.avos.sipra.sipagri.services.cores.KitService;
 import com.avos.sipra.sipagri.services.dtos.KitDTO;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
@@ -52,7 +53,22 @@ public class KitController {
         return ResponseEntity.ok(kit);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<PaginationResponseDTO<KitDTO>> searchKits(
+            @RequestParam String search,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        PaginationResponseDTO<KitDTO> responseDTO = kitService.findAllPagedByParams(pageable, search);
+        if (responseDTO.getData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @PostMapping
+    @XSSProtected
     public ResponseEntity<KitDTO> save(@RequestBody KitDTO kitDTO) {
         KitDTO kit = kitService.save(kitDTO);
         if (kit == null) {
@@ -62,6 +78,7 @@ public class KitController {
     }
 
     @PutMapping
+    @XSSProtected
     public ResponseEntity<KitDTO> update(@RequestBody KitDTO kitDTO) {
         KitDTO kit = kitService.update(kitDTO);
         if (kit == null) {
@@ -71,6 +88,7 @@ public class KitController {
     }
 
     @PatchMapping
+    @XSSProtected
     public ResponseEntity<KitDTO> patch(@RequestBody KitDTO kitDTO) {
         KitDTO kit = kitService.partialUpdate(kitDTO);
         if (kit == null) {
@@ -80,7 +98,7 @@ public class KitController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
         try {
             KitDTO kit = kitService.findOne(id);
             if (kit == null) {
