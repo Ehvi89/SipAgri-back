@@ -35,7 +35,7 @@ public class ParamsServiceImpl implements ParamsService {
     @Override
     public ParamsDTO update(ParamsDTO paramsDTO) {
         if (Objects.isNull(paramsDTO)) {throw new IllegalArgumentException("Params cannot be null");}
-        if (!existsById(paramsDTO.getId())) {throw new NullPointerException("Params not found");}
+        if (Boolean.FALSE.equals(existsById(paramsDTO.getId()))) {throw new NullPointerException("Params not found");}
         return save(paramsDTO);
     }
 
@@ -78,7 +78,7 @@ public class ParamsServiceImpl implements ParamsService {
     @Override
     public ParamsDTO partialUpdate(ParamsDTO paramsDTO) {
         if (Objects.isNull(paramsDTO)) {throw new IllegalArgumentException("Params cannot be null");}
-        if (!existsById(paramsDTO.getId())) {throw new NullPointerException("Params not found");}
+        if (Boolean.FALSE.equals(existsById(paramsDTO.getId()))) {throw new NullPointerException("Params not found");}
         Optional<Params> paramsOptional = paramsRepository.findById(paramsDTO.getId());
         if (paramsOptional.isPresent()) {
             Params params = paramsMapper.partialUpdate(paramsOptional.get(), paramsDTO);
@@ -97,6 +97,17 @@ public class ParamsServiceImpl implements ParamsService {
     public PaginationResponseDTO<ParamsDTO> findAllPaged(Pageable pageable) {
         Page<Params> page = paramsRepository.findAll(pageable);
 
+        return getParamsDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<ParamsDTO> findAllPagedByParams(Pageable pageable, String params) {
+        Page<Params> page = paramsRepository.findParamsByCodeParamsOrName(pageable, params, params);
+
+        return getParamsDTOPaginationResponseDTO(page);
+    }
+
+    private PaginationResponseDTO<ParamsDTO> getParamsDTOPaginationResponseDTO(Page<Params> page) {
         final int currentPage = page.getNumber();
         final int totalPage = page.getTotalPages();
         final int totalElements = (int) page.getTotalElements();

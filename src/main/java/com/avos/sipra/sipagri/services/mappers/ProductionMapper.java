@@ -1,6 +1,7 @@
 package com.avos.sipra.sipagri.services.mappers;
 
 import com.avos.sipra.sipagri.entities.Production;
+import com.avos.sipra.sipagri.entities.Plantation;
 import com.avos.sipra.sipagri.services.dtos.ProductionDTO;
 import org.springframework.stereotype.Component;
 
@@ -10,35 +11,45 @@ public class ProductionMapper {
     public ProductionDTO toDTO(Production production) {
         return ProductionDTO.builder()
                 .id(production.getId())
-                .plantationId(production.getPlantationId())
+                // NE PAS MAPPER LA PLANTATION COMPLÈTE - juste l'ID
+                .plantationId(production.getPlantation() != null ? production.getPlantation().getId() : null)
                 .productionInKg(production.getProductionInKg())
                 .purchasePrice(production.getPurchasePrice())
                 .mustBePaid(production.getMustBePaid())
+                .year(production.getYear())
                 .build();
     }
 
     public Production toEntity(ProductionDTO productionDTO) {
-        return Production.builder()
+        Production.ProductionBuilder builder = Production.builder()
                 .id(productionDTO.getId())
-                .plantationId(productionDTO.getPlantationId())
                 .productionInKg(productionDTO.getProductionInKg())
                 .purchasePrice(productionDTO.getPurchasePrice())
                 .mustBePaid(productionDTO.getMustBePaid())
-                .build();
+                .year(productionDTO.getYear());
+
+        // Créer une référence plantation si nécessaire
+        if (productionDTO.getPlantationId() != null) {
+            Plantation plantation = new Plantation();
+            plantation.setId(productionDTO.getPlantationId());
+            builder.plantation(plantation);
+        }
+
+        return builder.build();
     }
 
     public Production partialUpdate(Production production, ProductionDTO productionDTO) {
         if (productionDTO.getProductionInKg() != null) {
             production.setProductionInKg(productionDTO.getProductionInKg());
         }
-        if (productionDTO.getPlantationId() != null) {
-            production.setPlantationId(productionDTO.getPlantationId());
-        }
         if (productionDTO.getPurchasePrice() != null) {
             production.setPurchasePrice(productionDTO.getPurchasePrice());
         }
         if (productionDTO.getMustBePaid() != null) {
             production.setMustBePaid(productionDTO.getMustBePaid());
+        }
+        if (productionDTO.getYear() != null) {
+            production.setYear(productionDTO.getYear());
         }
         return production;
     }

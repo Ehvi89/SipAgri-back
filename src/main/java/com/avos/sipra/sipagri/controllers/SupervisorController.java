@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.controllers;
 
+import com.avos.sipra.sipagri.annotations.XSSProtected;
 import com.avos.sipra.sipagri.services.cores.SupervisorService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.SupervisorDTO;
@@ -52,7 +53,22 @@ public class SupervisorController {
         return ResponseEntity.ok(supervisorDTO);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<PaginationResponseDTO<SupervisorDTO>> searchSupervisors(
+            @RequestParam String search,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        PaginationResponseDTO<SupervisorDTO> responseDTO = supervisorService.findAllPagedByParams(pageable, search);
+        if (responseDTO.getData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @PostMapping
+    @XSSProtected
     public ResponseEntity<SupervisorDTO> save(@RequestBody SupervisorDTO supervisorDTO) {
         SupervisorDTO supervisor = supervisorService.save(supervisorDTO);
         if (supervisor == null) {
@@ -62,6 +78,7 @@ public class SupervisorController {
     }
 
     @PutMapping
+    @XSSProtected
     public ResponseEntity<SupervisorDTO> update(@RequestBody SupervisorDTO supervisorDTO) {
         SupervisorDTO supervisor = supervisorService.update(supervisorDTO);
         if (supervisor == null) {
@@ -71,6 +88,7 @@ public class SupervisorController {
     }
 
     @PatchMapping
+    @XSSProtected
     public ResponseEntity<SupervisorDTO> patch(@RequestBody SupervisorDTO supervisorDTO) {
         SupervisorDTO supervisor = supervisorService.partialUpdate(supervisorDTO);
         if (supervisor == null) {

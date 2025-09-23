@@ -35,7 +35,7 @@ public class PlanterServiceImpl implements PlanterService {
     @Override
     public PlanterDTO update(PlanterDTO planterDTO) {
         if(Objects.isNull(planterDTO.getId())) {throw new IllegalArgumentException("Id cannot be null");}
-        if(!existsById(planterDTO.getId())) {throw new IllegalArgumentException("Planter cannot be null");}
+        if(Boolean.FALSE.equals(existsById(planterDTO.getId()))) {throw new IllegalArgumentException("Planter cannot be null");}
         return save(planterDTO);
     }
 
@@ -67,6 +67,17 @@ public class PlanterServiceImpl implements PlanterService {
     public PaginationResponseDTO<PlanterDTO> findAllPaged(Pageable pageable) {
         final Page<Planter> page =  planterRepository.findAll(pageable);
 
+        return getPlanterDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<PlanterDTO> findAllPagedByParams(Pageable pageable, String search) {
+        final Page<Planter> page = planterRepository.findPlanterByFirstnameContainingIgnoreCaseOrLastnameContainingIgnoreCase(pageable, search, search);
+
+        return getPlanterDTOPaginationResponseDTO(page);
+    }
+
+    private PaginationResponseDTO<PlanterDTO> getPlanterDTOPaginationResponseDTO(Page<Planter> page) {
         final int currentPage = page.getNumber();
         final int totalPages = page.getTotalPages();
         final int totalElements = (int) page.getTotalElements();
@@ -82,7 +93,7 @@ public class PlanterServiceImpl implements PlanterService {
     @Override
     public PlanterDTO partialUpdate(PlanterDTO planterDTO) {
         if (Objects.isNull(planterDTO.getId())) {throw new IllegalArgumentException("Id cannot be null");}
-        if (!existsById(planterDTO.getId())) {throw new IllegalArgumentException("Planter cannot be null");}
+        if (Boolean.FALSE.equals(existsById(planterDTO.getId()))) {throw new IllegalArgumentException("Planter cannot be null");}
         Optional<Planter> planterOptional = planterRepository.findById(planterDTO.getId());
         if(planterOptional.isPresent()) {
             Planter planter = planterMapper.partialUpdate(planterOptional.get(), planterDTO);

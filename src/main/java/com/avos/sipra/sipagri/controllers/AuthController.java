@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.controllers;
 
+import com.avos.sipra.sipagri.annotations.XSSProtected;
 import com.avos.sipra.sipagri.entities.PasswordResetToken;
 import com.avos.sipra.sipagri.security.JwtUtil;
 import com.avos.sipra.sipagri.services.cores.AuthService;
@@ -12,7 +13,6 @@ import com.avos.sipra.sipagri.services.dtos.SupervisorDTO;
 import com.avos.sipra.sipagri.services.mappers.SupervisorMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,22 +35,27 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    @Autowired
-    private SupervisorService supervisorService;
-
-    @Autowired
-    private SupervisorMapper supervisorMapper;
-
-    @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private AuthService authService;
+    private final SupervisorService supervisorService;
+    private final SupervisorMapper supervisorMapper;
+    private final TokenService tokenService;
+    private final AuthService authService;
+    
+    private static final String MESSAGE = "message";
+    private static final String STATUS = "status";
+    private static final String TIMESTAMP = "timestamp";
 
     public AuthController(AuthenticationManager authenticationManager,
-                          JwtUtil jwtUtil) {
+                          JwtUtil jwtUtil,
+                          SupervisorService supervisorService,
+                          SupervisorMapper supervisorMapper,
+                          TokenService tokenService,
+                          AuthService authService) {
             this.authenticationManager = authenticationManager;
             this.jwtUtil = jwtUtil;
+            this.supervisorService = supervisorService;
+            this.supervisorMapper = supervisorMapper;
+            this.tokenService = tokenService;
+            this.authService = authService;
     }
 
     @PostMapping("/login")
@@ -70,6 +75,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
+    @XSSProtected
     public ResponseEntity<SupervisorDTO> createUser(@RequestBody SupervisorDTO usersDTO) {
         SupervisorDTO supervisor = supervisorService.findByEmail(usersDTO.getEmail());
         if (supervisor == null) {
@@ -81,9 +87,9 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
+    @XSSProtected
     public ResponseEntity<Map<String, Object>> forgotPassword(@RequestBody String email) {
         SupervisorDTO usersDTO = supervisorService.findByEmail(email);
-//        log.info("found supervisor: {}, for : {}", usersDTO, email);
 
         if (usersDTO != null) {
             String token = UUID.randomUUID().toString();
@@ -91,9 +97,9 @@ public class AuthController {
 
             return ResponseEntity.ok()
                     .body(Map.of(
-                            "status", HttpStatus.OK.value(),
-                            "message", "Email de réinitialisation envoyé",
-                            "timestamp", LocalDateTime.now()
+                            STATUS, HttpStatus.OK.value(),
+                            MESSAGE, "Email de réinitialisation envoyé",
+                            TIMESTAMP, LocalDateTime.now()
                     ));
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -113,16 +119,16 @@ public class AuthController {
 
             return ResponseEntity.ok()
                     .body(Map.of(
-                            "status", HttpStatus.OK.value(),
-                            "message", "Mot de passe mis à jour avec succès",
-                            "timestamp", LocalDateTime.now()
+                            STATUS, HttpStatus.OK.value(),
+                            MESSAGE, "Mot de passe mis à jour avec succès",
+                            TIMESTAMP, LocalDateTime.now()
                     ));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of(
-                            "status", 401,
-                            "message", "Token invalide ou expiré",
-                            "timestamp", LocalDateTime.now()
+                            STATUS, 401,
+                            MESSAGE, "Token invalide ou expiré",
+                            TIMESTAMP, LocalDateTime.now()
                     ));
         }
     }
@@ -143,8 +149,8 @@ public class AuthController {
         return ResponseEntity.status(httpStatus)
                 .body(Map.of(
                         "error", httpStatus.getReasonPhrase(),
-                        "message", "An error occurred",
-                        "status", httpStatus.value()
+                        MESSAGE, "An error occurred",
+                        STATUS, httpStatus.value()
                 ));
     }
 

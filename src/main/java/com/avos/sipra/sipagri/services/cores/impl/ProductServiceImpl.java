@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO update(ProductDTO productDTO) {
         if(Objects.isNull(productDTO.getId())) {throw new IllegalArgumentException("Id cannot be null");}
-        if(!existsById(productDTO.getId())) {throw new IllegalArgumentException("Product not found");}
+        if(Boolean.FALSE.equals(existsById(productDTO.getId()))) {throw new IllegalArgumentException("Product not found");}
         return save(productDTO);
     }
 
@@ -64,6 +64,17 @@ public class ProductServiceImpl implements ProductService {
     public PaginationResponseDTO<ProductDTO> findAllPaged(Pageable pageable) {
         final Page<Product> page = productRepository.findAll(pageable);
 
+        return getProductDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<ProductDTO> findAllPagedByParams(Pageable pageable, String params) {
+        final Page<Product> page = productRepository.findProductsByName(pageable, params);
+
+        return getProductDTOPaginationResponseDTO(page);
+    }
+
+    private PaginationResponseDTO<ProductDTO> getProductDTOPaginationResponseDTO(Page<Product> page) {
         final int currentPage = page.getNumber();
         final int totalPages = page.getTotalPages();
         final int totalElements = (int) page.getTotalElements();
@@ -79,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO partialUpdate(ProductDTO productDTO) {
         if(Objects.isNull(productDTO.getId())) {throw new IllegalArgumentException("Id cannot be null");}
-        if(!existsById(productDTO.getId())) {throw new IllegalArgumentException("Product not found");}
+        if(Boolean.FALSE.equals(existsById(productDTO.getId()))) {throw new IllegalArgumentException("Product not found");}
         Optional<Product> productOp = productRepository.findById(productDTO.getId());
         if(productOp.isPresent()) {
             Product product = productMapper.partialUpdate(productOp.get(), productDTO);
