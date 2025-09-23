@@ -70,10 +70,11 @@ public class ProductionServiceImpl implements ProductionService{
                 production.setMustBePaid(finalDTO.getMustBePaid());
                 production = productionRepository.save(production);
             }
+
+            Plantation plantation = plantationRepository.getReferenceById(production.getPlantation().getId());
+            plantation.getProductions().add(production);
+            plantationRepository.save(plantation);
         }
-        Plantation plantation = plantationRepository.getReferenceById(production.getPlantation().getId());
-        plantation.getProductions().add(production);
-        plantationRepository.save(plantation);
 
         return productionMapper.toDTO(production);
     }
