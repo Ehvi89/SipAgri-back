@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.services.dtos;
 
+import com.avos.sipra.sipagri.enums.SupervisorProfile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +20,6 @@ public class SupervisorDTO {
     private String email;
 
     private String password;
+
+    private SupervisorProfile profile;
 }

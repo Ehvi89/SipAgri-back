@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.entities;
 
+import com.avos.sipra.sipagri.enums.SupervisorProfile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,8 @@ public class Supervisor {
     private String email;
 
     private String password;
+
+    private SupervisorProfile profile;
 
     @OneToMany(mappedBy = "supervisor")
     private List<Planter> planters;
