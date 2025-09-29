@@ -13,6 +13,7 @@ public class SupervisorMapper {
                 .firstname(supervisor.getFirstname())
                 .lastname(supervisor.getLastname())
                 .email(supervisor.getEmail())
+                .phone(supervisor.getPhone())
                 .profile(supervisor.getProfile())
                 .build();
     }
@@ -24,6 +25,7 @@ public class SupervisorMapper {
                 .lastname(supervisorDTO.getLastname())
                 .email(supervisorDTO.getEmail())
                 .password(supervisorDTO.getPassword())
+                .phone(supervisorDTO.getPhone())
                 .profile(supervisorDTO.getProfile())
                 .build();
     }
@@ -40,6 +42,9 @@ public class SupervisorMapper {
         }
         if (supervisorDTO.getPassword() != null) {
             supervisor.setPassword(supervisorDTO.getPassword());
+        }
+        if (supervisorDTO.getPhone() != null) {
+            supervisor.setPhone(supervisorDTO.getPhone());
         }
         if (supervisorDTO.getProfile() != null) {
             supervisor.setProfile(supervisorDTO.getProfile());

@@ -1,6 +1,7 @@
 package com.avos.sipra.sipagri.services.cores.impl;
 
 import com.avos.sipra.sipagri.entities.PasswordResetToken;
+import com.avos.sipra.sipagri.enums.SupervisorProfile;
 import com.avos.sipra.sipagri.repositories.PasswordResetTokenRepository;
 import com.avos.sipra.sipagri.services.cores.AuthService;
 import com.avos.sipra.sipagri.services.cores.SupervisorService;
@@ -43,6 +44,9 @@ public class AuthServiceImpl implements AuthService {
     public SupervisorDTO registerUser(SupervisorDTO supervisorDTO) {
         String mdpCrypter = bCryptPasswordEncoder.encode(supervisorDTO.getPassword());
         supervisorDTO.setPassword(mdpCrypter);
+        if (supervisorDTO.getProfile() == null) {
+            supervisorDTO.setProfile(SupervisorProfile.SUPERVISOR);
+        }
         return supervisorService.save(supervisorDTO);
     }
 

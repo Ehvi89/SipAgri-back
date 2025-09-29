@@ -32,6 +32,8 @@ public class Supervisor {
 
     private SupervisorProfile profile;
 
+    private String phone;
+
     @OneToMany(mappedBy = "supervisor")
     private List<Planter> planters;
 }
