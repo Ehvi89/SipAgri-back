@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-sequences
+      author: Ehvi
+      changes:
+        - createSequence:
+            sequenceName: kit_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createSequence:
+            sequenceName: kit_product_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createSequence:
+            sequenceName: params_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createSequence:
+            sequenceName: plantation_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createSequence:
+            sequenceName: planter_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createSequence:
+            sequenceName: product_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createSequence:
+            sequenceName: production_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createSequence:
+            sequenceName: supervisor_seq
+            startValue: 1
+            incrementBy: 1
+
+        - createSequence:
+            sequenceName: password_reset_token_seq
+            startValue: 1
+            incrementBy: 1

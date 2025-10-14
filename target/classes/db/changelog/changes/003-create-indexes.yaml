@@ -1,0 +1,229 @@
+databaseChangeLog:
+  # Index pour la table supervisors
+  - changeSet:
+      id: 003-create-supervisors-indexes
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE UNIQUE INDEX idx_supervisors_email 
+              ON supervisors(email) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              ALTER TABLE supervisors 
+              ADD CONSTRAINT pk_supervisors PRIMARY KEY (id) 
+              USING INDEX TABLESPACE SIPAGRI_INDEX
+        - rollback:
+            - sql: DROP INDEX idx_supervisors_email
+
+  # Index pour la table Products
+  - changeSet:
+      id: 003-create-products-indexes
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE UNIQUE INDEX idx_products_name 
+              ON Products(name) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              ALTER TABLE Products 
+              ADD CONSTRAINT pk_products PRIMARY KEY (id) 
+              USING INDEX TABLESPACE SIPAGRI_INDEX
+        - rollback:
+            - sql: DROP INDEX idx_products_name
+
+  # Index pour la table Kits
+  - changeSet:
+      id: 003-create-kits-indexes
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE UNIQUE INDEX idx_kits_name 
+              ON Kits(name) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              ALTER TABLE Kits 
+              ADD CONSTRAINT pk_kits PRIMARY KEY (id) 
+              USING INDEX TABLESPACE SIPAGRI_INDEX
+        - rollback:
+            - sql: DROP INDEX idx_kits_name
+
+  # Index pour la table Kit_Products
+  - changeSet:
+      id: 003-create-kit-products-indexes
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_kit_products_product 
+              ON Kit_Products(product_id) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_kit_products_kit 
+              ON Kit_Products(kit) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              ALTER TABLE Kit_Products 
+              ADD CONSTRAINT pk_kit_products PRIMARY KEY (id) 
+              USING INDEX TABLESPACE SIPAGRI_INDEX
+        - rollback:
+            - sql: DROP INDEX idx_kit_products_product
+            - sql: DROP INDEX idx_kit_products_kit
+
+  # Index pour la table Planters
+  - changeSet:
+      id: 003-create-planters-indexes
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_planters_supervisor 
+              ON Planters(supervisor_id) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_planters_village 
+              ON Planters(village) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_pltrs_lastname_firstname 
+              ON Planters(lastname, firstname) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              ALTER TABLE Planters 
+              ADD CONSTRAINT pk_planters PRIMARY KEY (id) 
+              USING INDEX TABLESPACE SIPAGRI_INDEX
+        - rollback:
+            - sql: DROP INDEX idx_planters_supervisor
+            - sql: DROP INDEX idx_planters_village
+            - sql: DROP INDEX idx_planters_lastname_firstname
+
+  # Index pour la table plantations
+  - changeSet:
+      id: 003-create-plantations-indexes
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_plantations_planter 
+              ON plantations(planter_id) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_plantations_kit 
+              ON plantations(kit_id) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              ALTER TABLE plantations 
+              ADD CONSTRAINT pk_plantations PRIMARY KEY (id) 
+              USING INDEX TABLESPACE SIPAGRI_INDEX
+        - rollback:
+            - sql: DROP INDEX idx_plantations_planter
+            - sql: DROP INDEX idx_plantations_kit
+
+  # Index pour la table Productions
+  - changeSet:
+      id: 003-create-productions-indexes
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_productions_plantation 
+              ON Productions(plantation_id) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_productions_year 
+              ON Productions(year) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              ALTER TABLE Productions 
+              ADD CONSTRAINT pk_productions PRIMARY KEY (id) 
+              USING INDEX TABLESPACE SIPAGRI_INDEX
+        - rollback:
+            - sql: DROP INDEX idx_productions_plantation
+            - sql: DROP INDEX idx_productions_year
+
+  # Index pour la table params
+  - changeSet:
+      id: 003-create-params-indexes
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_params_code 
+              ON params(code_params) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_params_name 
+              ON params(name) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              ALTER TABLE params 
+              ADD CONSTRAINT pk_params PRIMARY KEY (id) 
+              USING INDEX TABLESPACE SIPAGRI_INDEX
+        - rollback:
+            - sql: DROP INDEX idx_params_code
+            - sql: DROP INDEX idx_params_name
+
+  # Index pour la table password_reset_token
+  - changeSet:
+      id: 003-create-password-reset-token-indexes
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_pswd_rst_tkn_spvsr 
+              ON password_reset_token(supervisor_id) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE INDEX idx_pswd_rst_tkn_token 
+              ON password_reset_token(token) 
+              TABLESPACE SIPAGRI_INDEX
+        - sql:
+            dbms: oracle
+            sql: |
+              ALTER TABLE password_reset_token 
+              ADD CONSTRAINT pk_password_reset_token PRIMARY KEY (id) 
+              USING INDEX TABLESPACE SIPAGRI_INDEX
+        - rollback:
+            - sql: DROP INDEX idx_password_reset_token_supervisor
+            - sql: DROP INDEX idx_password_reset_token_token
