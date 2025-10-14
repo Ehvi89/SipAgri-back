@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -23,4 +24,8 @@ public class ProductionDTO {
     private Boolean mustBePaid;
 
     private Date year;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }

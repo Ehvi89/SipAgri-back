@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/001-create-sequences.yaml
+  - include:
+      file: db/changelog/changes/002-create-tables.yaml
+  - include:
+      file: db/changelog/changes/003-create-indexes.yaml
+  - include:
+      file: db/changelog/changes/004-create-foreign-keys.yaml
+  - include:
+      file: db/changelog/changes/005-initialize-database.yaml

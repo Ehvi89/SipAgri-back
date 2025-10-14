@@ -18,16 +18,16 @@ public class Kit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "kit_seq")
-    @SequenceGenerator(name = "kit_seq", allocationSize = 1)
+    @SequenceGenerator(name = "kit_seq", sequenceName = "kit_seq", allocationSize = 1)
     private Long id;
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "total_cost", nullable = false)
     private Double totalCost;
 
-    @Column(length = 255)
+    @Column(name = "description", length = 255)
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

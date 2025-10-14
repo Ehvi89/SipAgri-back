@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface KitRepository extends JpaRepository<Kit, Long> {
-    Page<Kit> findKitByName(Pageable pageable, String name);
+    Page<Kit> findKitByNameContainingIgnoreCase(Pageable pageable, String name);
 }

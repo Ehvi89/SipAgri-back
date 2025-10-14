@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 public class KitProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "kit_product_seq")
-    @SequenceGenerator(name = "kit_product_seq", allocationSize = 1)
+    @SequenceGenerator(name = "kit_product_seq", sequenceName = "kit_product_seq", allocationSize = 1)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(nullable = false)
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
     @Column(name = "total_cost", nullable = false)

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +29,9 @@ public class PlanterServiceImpl implements PlanterService {
     @Override
     public PlanterDTO save(PlanterDTO planterDTO) {
         Planter planter = planterMapper.toEntity(planterDTO);
+        if (planter.getCreatedAt() == null) {
+            planter.setCreatedAt(LocalDateTime.now());
+        }
         planter = planterRepository.save(planter);
         return planterMapper.toDTO(planter);
     }
@@ -36,6 +40,7 @@ public class PlanterServiceImpl implements PlanterService {
     public PlanterDTO update(PlanterDTO planterDTO) {
         if(Objects.isNull(planterDTO.getId())) {throw new IllegalArgumentException("Id cannot be null");}
         if(Boolean.FALSE.equals(existsById(planterDTO.getId()))) {throw new IllegalArgumentException("Planter cannot be null");}
+        planterDTO.setUpdatedAt(LocalDateTime.now());
         return save(planterDTO);
     }
 
@@ -66,6 +71,13 @@ public class PlanterServiceImpl implements PlanterService {
     @Override
     public PaginationResponseDTO<PlanterDTO> findAllPaged(Pageable pageable) {
         final Page<Planter> page =  planterRepository.findAll(pageable);
+
+        return getPlanterDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<PlanterDTO> findPlanterBySupervisor(Pageable pageable, Long supervisorId){
+        final Page<Planter> page =  planterRepository.findPlanterBySupervisor_Id(supervisorId, pageable);
 
         return getPlanterDTOPaginationResponseDTO(page);
     }
