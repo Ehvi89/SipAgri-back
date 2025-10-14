@@ -15,14 +15,15 @@ import lombok.NoArgsConstructor;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq")
-    @SequenceGenerator(name = "product_seq", allocationSize = 1)
+    @SequenceGenerator(name = "product_seq", sequenceName = "product_seq", allocationSize = 1)
     private Long id;
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
+    @Column(name = "description")
     private String description;
-    
-    @Column(nullable = false)
+
+    @Column(name = "price", nullable = false)
     private Double price;
 }

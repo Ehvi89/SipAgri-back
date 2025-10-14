@@ -21,5 +21,7 @@ public class SupervisorDTO {
 
     private String password;
 
+    private String phone;
+
     private SupervisorProfile profile;
 }

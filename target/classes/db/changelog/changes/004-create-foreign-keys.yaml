@@ -1,0 +1,67 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-foreign-keys
+      author: Ehvi
+      changes:
+        # Kit_Products -> Product
+        - addForeignKeyConstraint:
+            baseTableName: Kit_Products
+            baseColumnNames: product_id
+            referencedTableName: Products
+            referencedColumnNames: id
+            constraintName: fk_kit_products_product
+            onDelete: RESTRICT
+        
+        # Kit_Products -> Kit
+        - addForeignKeyConstraint:
+            baseTableName: Kit_Products
+            baseColumnNames: kit
+            referencedTableName: Kits
+            referencedColumnNames: id
+            constraintName: fk_kit_products_kit
+            onDelete: CASCADE
+        
+        # Planters -> Supervisor
+        - addForeignKeyConstraint:
+            baseTableName: Planters
+            baseColumnNames: supervisor_id
+            referencedTableName: supervisors
+            referencedColumnNames: id
+            constraintName: fk_planters_supervisor
+            onDelete: SET NULL
+        
+        # Plantations -> Planter
+        - addForeignKeyConstraint:
+            baseTableName: plantations
+            baseColumnNames: planter_id
+            referencedTableName: Planters
+            referencedColumnNames: id
+            constraintName: fk_plantations_planter
+            onDelete: SET NULL
+        
+        # Plantations -> Kit
+        - addForeignKeyConstraint:
+            baseTableName: plantations
+            baseColumnNames: kit_id
+            referencedTableName: Kits
+            referencedColumnNames: id
+            constraintName: fk_plantations_kit
+            onDelete: RESTRICT
+        
+        # Productions -> Plantation
+        - addForeignKeyConstraint:
+            baseTableName: Productions
+            baseColumnNames: plantation_id
+            referencedTableName: plantations
+            referencedColumnNames: id
+            constraintName: fk_productions_plantation
+            onDelete: CASCADE
+        
+        # PasswordResetToken -> Supervisor
+        - addForeignKeyConstraint:
+            baseTableName: password_reset_token
+            baseColumnNames: supervisor_id
+            referencedTableName: supervisors
+            referencedColumnNames: id
+            constraintName: fk_password_reset_supervisor
+            onDelete: CASCADE

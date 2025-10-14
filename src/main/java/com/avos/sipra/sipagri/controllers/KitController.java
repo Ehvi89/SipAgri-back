@@ -29,7 +29,7 @@ public class KitController {
     ) {
         final Pageable pageable = PageRequest.of(page, size);
         PaginationResponseDTO<KitDTO> response = kitService.findAllPaged(pageable);
-        if (response.getData() == null || response.getData().isEmpty()) {
+        if (response.getData() == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(response);

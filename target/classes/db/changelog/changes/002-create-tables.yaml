@@ -1,0 +1,169 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-supervisors-table
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE TABLE supervisors (
+                id NUMBER(19) NOT NULL,
+                firstname VARCHAR2(255),
+                lastname VARCHAR2(255),
+                email VARCHAR2(255),
+                password VARCHAR2(255),
+                profile VARCHAR2(50),
+                phone VARCHAR2(50)
+              ) TABLESPACE SIPAGRI_DATA
+        - rollback:
+            - sql: DROP TABLE supervisors
+
+  - changeSet:
+      id: 002-create-products-table
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE TABLE Products (
+                id NUMBER(19) NOT NULL,
+                name VARCHAR2(100) NOT NULL,
+                description VARCHAR2(255),
+                price NUMBER(19,2) NOT NULL
+              ) TABLESPACE SIPAGRI_DATA
+        - rollback:
+            - sql: DROP TABLE Products
+
+  - changeSet:
+      id: 002-create-kits-table
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE TABLE Kits (
+                id NUMBER(19) NOT NULL,
+                name VARCHAR2(100) NOT NULL,
+                total_cost NUMBER(19,2) NOT NULL,
+                description VARCHAR2(255)
+              ) TABLESPACE SIPAGRI_DATA
+        - rollback:
+            - sql: DROP TABLE Kits
+
+  - changeSet:
+      id: 002-create-kit-products-table
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE TABLE Kit_Products (
+                id NUMBER(19) NOT NULL,
+                product_id NUMBER(19) NOT NULL,
+                quantity NUMBER(10) NOT NULL,
+                total_cost NUMBER(19,2) NOT NULL,
+                kit NUMBER(19)
+              ) TABLESPACE SIPAGRI_DATA
+        - rollback:
+            - sql: DROP TABLE Kit_Products
+
+  - changeSet:
+      id: 002-create-planters-table
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE TABLE Planters (
+                id NUMBER(19) NOT NULL,
+                lastname VARCHAR2(50) NOT NULL,
+                firstname VARCHAR2(50) NOT NULL,
+                birthday DATE NOT NULL,
+                gender VARCHAR2(20) NOT NULL,
+                phone_number VARCHAR2(50),
+                marital_status VARCHAR2(50) NOT NULL,
+                children_number NUMBER(10) NOT NULL,
+                village VARCHAR2(100) NOT NULL,
+                supervisor_id NUMBER(19),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+              ) TABLESPACE SIPAGRI_DATA
+        - rollback:
+            - sql: DROP TABLE Planters
+
+  - changeSet:
+      id: 002-create-plantations-table
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE TABLE plantations (
+                id NUMBER(19) NOT NULL,
+                name VARCHAR2(255),
+                description VARCHAR2(500),
+                farmed_area NUMBER(19,2),
+                latitude NUMBER(19,10),
+                longitude NUMBER(19,10),
+                display_name VARCHAR2(500),
+                planter_id NUMBER(19),
+                kit_id NUMBER(19) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+              ) TABLESPACE SIPAGRI_DATA
+        - rollback:
+            - sql: DROP TABLE plantations
+
+  - changeSet:
+      id: 002-create-productions-table
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE TABLE Productions (
+                id NUMBER(19) NOT NULL,
+                plantation_id NUMBER(19),
+                prod_in_kg NUMBER(19,2) NOT NULL,
+                purchase_price NUMBER(19,2),
+                must_be_paid NUMBER(1),
+                year DATE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+              ) TABLESPACE SIPAGRI_DATA
+        - rollback:
+            - sql: DROP TABLE Productions
+
+  - changeSet:
+      id: 002-create-params-table
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE TABLE params (
+                id NUMBER(19) NOT NULL,
+                name VARCHAR2(255) NOT NULL,
+                description VARCHAR2(500),
+                value VARCHAR2(1000) NOT NULL,
+                code_params VARCHAR2(100),
+                encrypted NUMBER(1)
+              ) TABLESPACE SIPAGRI_DATA
+        - rollback:
+            - sql: DROP TABLE params
+
+  - changeSet:
+      id: 002-create-password-reset-token-table
+      author: Ehvi
+      changes:
+        - sql:
+            dbms: oracle
+            sql: |
+              CREATE TABLE password_reset_token (
+                id NUMBER(19) NOT NULL,
+                token VARCHAR2(500),
+                supervisor_id NUMBER(19) NOT NULL,
+                expiry_date DATE
+              ) TABLESPACE SIPAGRI_DATA
+        - rollback:
+            - sql: DROP TABLE password_reset_token

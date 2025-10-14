@@ -34,6 +34,20 @@ public class ProductionController {
         }
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/by_supervisor")
+    public ResponseEntity<PaginationResponseDTO<ProductionDTO>> findProductionsBySupervisor(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam Long supervisorId
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PaginationResponseDTO<ProductionDTO> response = productionService.findProductionByPlantationPlanterSupervisor(pageable, supervisorId);
+
+        if (response.getData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<ProductionDTO>> findAll() {

@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-initialize-database
+      author: Ehvi
+      changes:
+        # Add Parms PRIX_ACHAT_MAIS
+        - sql:
+            dbms: oracle
+            sql: |
+              MERGE INTO params p
+              USING (SELECT 'PRIX_ACHAT_MAIS' as name FROM dual) src
+              ON (p.name = src.name)
+              WHEN NOT MATCHED THEN
+                INSERT (id, name, description, value, code_params, encrypted)
+                VALUES (params_seq.nextval, 'PRIX_ACHAT_MAIS', 'PRIX ACHAT MAIS', '100', 'BACKEND', 0)
+        - rollback:
+            - sql: DELETE FROM params WHERE name = 'PRIX_ACHAT_MAIS'

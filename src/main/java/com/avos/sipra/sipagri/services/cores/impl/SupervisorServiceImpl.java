@@ -1,6 +1,7 @@
 package com.avos.sipra.sipagri.services.cores.impl;
 
 import com.avos.sipra.sipagri.entities.Supervisor;
+import com.avos.sipra.sipagri.enums.SupervisorProfile;
 import com.avos.sipra.sipagri.repositories.SupervisorRepository;
 import com.avos.sipra.sipagri.services.cores.SupervisorService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
@@ -75,7 +76,14 @@ public class SupervisorServiceImpl implements SupervisorService {
 
     @Override
     public PaginationResponseDTO<SupervisorDTO> findAllPagedByParams(Pageable pageable, String params) {
-        final Page<Supervisor> page = supervisorRepository.findSupervisorsByFirstnameContainingIgnoreCaseOrLastnameContainingIgnoreCase(pageable, params, params);
+        final Page<Supervisor> page = supervisorRepository.searchSupervisors(pageable, params, params, null);
+
+        return getSupervisorDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<SupervisorDTO> findAllPagedByParams(Pageable pageable, String params, SupervisorProfile profile) {
+        final Page<Supervisor> page = supervisorRepository.searchSupervisors(pageable, params, params, profile);
 
         return getSupervisorDTOPaginationResponseDTO(page);
     }

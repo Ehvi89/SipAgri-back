@@ -101,7 +101,7 @@ public class KitServiceImpl implements KitService {
 
     @Override
     public PaginationResponseDTO<KitDTO> findAllPagedByParams(Pageable pageable, String params) {
-        final Page<Kit> page = kitRepository.findKitByName(pageable, params);
+        final Page<Kit> page = kitRepository.findKitByNameContainingIgnoreCase(pageable, params);
 
         return getKitDTOPaginationResponseDTO(page);
     }

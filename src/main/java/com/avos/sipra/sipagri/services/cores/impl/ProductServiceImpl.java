@@ -69,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PaginationResponseDTO<ProductDTO> findAllPagedByParams(Pageable pageable, String params) {
-        final Page<Product> page = productRepository.findProductsByName(pageable, params);
+        final Page<Product> page = productRepository.findProductsByNameContainingIgnoreCase(pageable, params);
 
         return getProductDTOPaginationResponseDTO(page);
     }

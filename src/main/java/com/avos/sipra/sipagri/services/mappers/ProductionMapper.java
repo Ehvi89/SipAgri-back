@@ -17,6 +17,8 @@ public class ProductionMapper {
                 .purchasePrice(production.getPurchasePrice())
                 .mustBePaid(production.getMustBePaid())
                 .year(production.getYear())
+                .createdAt(production.getCreatedAt())
+                .updatedAt(production.getUpdatedAt())
                 .build();
     }
 
@@ -26,6 +28,8 @@ public class ProductionMapper {
                 .productionInKg(productionDTO.getProductionInKg())
                 .purchasePrice(productionDTO.getPurchasePrice())
                 .mustBePaid(productionDTO.getMustBePaid())
+                .updatedAt(productionDTO.getUpdatedAt())
+                .createdAt(productionDTO.getCreatedAt())
                 .year(productionDTO.getYear());
 
         // Créer une référence plantation si nécessaire
@@ -50,6 +54,12 @@ public class ProductionMapper {
         }
         if (productionDTO.getYear() != null) {
             production.setYear(productionDTO.getYear());
+        }
+        if (productionDTO.getUpdatedAt() != null) {
+            production.setUpdatedAt(productionDTO.getUpdatedAt());
+        }
+        if (productionDTO.getCreatedAt() != null) {
+            production.setCreatedAt(productionDTO.getCreatedAt());
         }
         return production;
     }

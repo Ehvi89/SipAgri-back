@@ -35,6 +35,21 @@ public class PlanterController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @GetMapping("/by_supervisor")
+    public ResponseEntity<PaginationResponseDTO<PlanterDTO>> getPlantersBySupervisor(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam Long supervisorId)
+    {
+        Pageable pageable = PageRequest.of(page, size);
+
+        PaginationResponseDTO<PlanterDTO> responseDTO = planterService.findPlanterBySupervisor(pageable, supervisorId);
+        if (responseDTO.getData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<PlanterDTO>> getAllPlanters() {
         List<PlanterDTO> planterDTO = planterService.findAll();

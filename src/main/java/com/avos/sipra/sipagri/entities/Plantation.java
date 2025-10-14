@@ -6,7 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -18,11 +21,13 @@ import java.util.List;
 public class Plantation {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "plantation_seq")
-    @SequenceGenerator(name = "plantation_seq", allocationSize = 1)
+    @SequenceGenerator(name = "plantation_seq", sequenceName = "plantation_seq", allocationSize = 1)
     private Long id;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "description")
     private String description;
 
     @Column(name = "farmed_area")
@@ -31,8 +36,9 @@ public class Plantation {
     @Embedded
     private Location gpsLocation;
 
-    @Column(name = "planter_id")
-    private Long planterId;
+    @ManyToOne
+    @JoinColumn(name = "planter_id")
+    private Planter planter;
 
     @OneToMany(mappedBy = "plantation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Production> productions;
@@ -40,4 +46,12 @@ public class Plantation {
     @ManyToOne(optional = false)
     @JoinColumn(name = "kit_id")
     private Kit kit;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

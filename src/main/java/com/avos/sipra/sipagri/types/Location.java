@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Embeddable
 @Data
 @NoArgsConstructor
@@ -17,5 +15,5 @@ public class Location {
     Double latitude;
     Double longitude;
     @AttributeOverride(name = "name", column = @Column(name = "display_name", unique=true))
-    String display_name;
+    String displayName;
 }

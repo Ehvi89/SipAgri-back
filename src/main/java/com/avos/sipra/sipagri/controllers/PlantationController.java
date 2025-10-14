@@ -53,6 +53,20 @@ public class PlantationController {
         return ResponseEntity.ok().body(plantationDTOs);
     }
 
+    @GetMapping("/by_supervisor")
+    public ResponseEntity<PaginationResponseDTO<PlantationDTO>> getAll(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam Long supervisorId
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PaginationResponseDTO<PlantationDTO> response = plantationService.findAllPagedPlantationByPlanterSupervisor(pageable, supervisorId);
+        if (response.getData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/search")
     public ResponseEntity<PaginationResponseDTO<PlantationDTO>> searchPlantations(
             @RequestParam String search,

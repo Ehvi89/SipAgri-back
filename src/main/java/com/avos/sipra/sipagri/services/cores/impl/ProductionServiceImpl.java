@@ -57,7 +57,9 @@ public class ProductionServiceImpl implements ProductionService{
     @Override
     public ProductionDTO save(ProductionDTO productionDTO) {
         productionDTO = calculationService.calculateProductionValues(productionDTO);
-
+        if (productionDTO.getCreatedAt() == null) {
+            productionDTO.setCreatedAt(java.time.LocalDateTime.now());
+        }
         Production production = productionMapper.toEntity(productionDTO);
         production = productionRepository.save(production);
 
@@ -102,6 +104,7 @@ public class ProductionServiceImpl implements ProductionService{
 
         // Conversion en entité et sauvegarde
         Production production = productionMapper.toEntity(productionDTO);
+        production.setUpdatedAt(java.time.LocalDateTime.now());
         production = productionRepository.save(production);
 
         return productionMapper.toDTO(production);
@@ -175,6 +178,20 @@ public class ProductionServiceImpl implements ProductionService{
     @Override
     public PaginationResponseDTO<ProductionDTO> findAllPagedByParams(Pageable pageable, String params) {
         final Page<Production> page = productionRepository.findProductionsByPlantation_NameOrProductionInKg(pageable, params, params);
+
+        return getProductionDTOPaginationResponseDTO(page);
+    }
+
+    /**
+     * Finds and retrieves a paginated list of ProductionDTO objects that are associated with a specific supervisor ID.
+     * This method fetches all production data corresponding to the plantations overseen by the supervisor.
+     *
+     * @param pageable an instance of Pageable that defines pagination and sorting parameters for the query
+     * @param supervisorId the ID of the supervisor whose related production data is to be fetched
+     * @return a PaginationResponseDTO containing a list of ProductionDTO objects and pagination metadata
+     */
+    public PaginationResponseDTO<ProductionDTO> findProductionByPlantationPlanterSupervisor(Pageable pageable, Long supervisorId) {
+        final Page<Production> page = productionRepository.findProductionsByPlantation_Planter_Supervisor_Id(pageable, supervisorId);
 
         return getProductionDTOPaginationResponseDTO(page);
     }

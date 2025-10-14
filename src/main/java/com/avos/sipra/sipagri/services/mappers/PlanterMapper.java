@@ -27,6 +27,8 @@ public class PlanterMapper {
                 .phoneNumber(planter.getPhoneNumber())
                 .village(planter.getVillage())
                 .supervisor(supervisorMapper.toDTO(planter.getSupervisor()))
+                .createdAt(planter.getCreatedAt())
+                .updatedAt(planter.getUpdatedAt())
                 .plantations(planter.getPlantations() != null ? 
                     planter.getPlantations().stream()
                         .map(plantationMapper::toDTO)
@@ -48,6 +50,8 @@ public class PlanterMapper {
                 .phoneNumber(planterDTO.getPhoneNumber())
                 .village(planterDTO.getVillage())
                 .supervisor(supervisorMapper.toEntity(planterDTO.getSupervisor()))
+                .createdAt(planterDTO.getCreatedAt())
+                .updatedAt(planterDTO.getUpdatedAt())
                 .plantations(planterDTO.getPlantations() != null ?
                     planterDTO.getPlantations().stream()
                         .map(plantationMapper::toEntity)
@@ -81,6 +85,12 @@ public class PlanterMapper {
         }
         if (planterDTO.getVillage() != null) {
             planter.setVillage(planterDTO.getVillage());
+        }
+        if (planterDTO.getCreatedAt() != null) {
+            planter.setCreatedAt(planterDTO.getCreatedAt());
+        }
+        if (planterDTO.getUpdatedAt() != null) {
+            planter.setUpdatedAt(planterDTO.getUpdatedAt());
         }
         if (planterDTO.getSupervisor() != null) {
             planter.setSupervisor(supervisorMapper.toEntity(planterDTO.getSupervisor()));

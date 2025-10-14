@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +40,9 @@ public class PlantationServiceImpl implements PlantationService {
     @Override
     public PlantationDTO save(PlantationDTO plantationDTO) {
         Plantation plantation = plantationMapper.toEntity(plantationDTO);
+        if (plantationDTO.getCreatedAt() == null) {
+            plantation.setCreatedAt(LocalDateTime.now());
+        }
 
         // Calculer les valeurs des productions
         if (plantationDTO.getProductions() != null) {
@@ -51,7 +55,7 @@ public class PlantationServiceImpl implements PlantationService {
         plantation = plantationRepository.save(plantation);
 
         // Mettre à jour la liste des plantations du planter
-        Planter planter = planterRepository.getReferenceById(plantation.getPlanterId());
+        Planter planter = planterRepository.getReferenceById(plantation.getPlanter().getId());
         planter.getPlantations().add(plantation);
         planterRepository.save(planter);
 
@@ -62,6 +66,7 @@ public class PlantationServiceImpl implements PlantationService {
     public PlantationDTO update(PlantationDTO plantationDTO) {
         if (Objects.isNull(plantationDTO.getId())) {throw new IllegalArgumentException("Id cannot be null");}
         if (Boolean.FALSE.equals(existsById(plantationDTO.getId()))) {throw new IllegalArgumentException("Plantation does not exist");}
+        plantationDTO.setUpdatedAt(LocalDateTime.now());
         return save(plantationDTO);
     }
 
@@ -108,6 +113,13 @@ public class PlantationServiceImpl implements PlantationService {
     @Override
     public PaginationResponseDTO<PlantationDTO> findAllPagedByParams(Pageable pageable, String params) {
         Page<Plantation> page =  plantationRepository.findPlantationsByNameContainingIgnoreCase(pageable, params);
+
+        return getPlantationDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<PlantationDTO> findAllPagedPlantationByPlanterSupervisor(Pageable pageable, Long supervisorId) {
+        Page<Plantation> page =  plantationRepository.findPlantationsByPlanter_Supervisor_Id(pageable, supervisorId);
 
         return getPlantationDTOPaginationResponseDTO(page);
     }

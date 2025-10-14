@@ -7,7 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -20,38 +23,47 @@ import java.util.List;
 public class Planter {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "planter_seq")
-    @SequenceGenerator(name = "planter_seq", allocationSize = 1)
+    @SequenceGenerator(name = "planter_seq", sequenceName = "planter_seq", allocationSize = 1)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "lastname", nullable = false, length = 50)
     private String lastname;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "firstname", nullable = false, length = 50)
     private String firstname;
 
-    @Column(nullable = false)
+    @Column(name = "birthday", nullable = false)
     private Date birthday;
 
-    @Column(nullable = false)
+    @Column(name = "gender", nullable = false)
+    @Enumerated(EnumType.STRING)
     private HumanGender gender;
 
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "marital_status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private MaritalStatus maritalStatus;
 
-    @Column(nullable = false)
+    @Column(name = "children_number", nullable = false)
     private Integer childrenNumber;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "village", nullable = false, length = 100)
     private String village;
 
     @ManyToOne
     @JoinColumn(name = "supervisor_id")
-    // Assuming a planter is supervised by one supervisor
     private Supervisor supervisor;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    // Assuming a planter can have multiple plantations
+    @OneToMany(mappedBy = "planter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Plantation> plantations;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

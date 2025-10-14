@@ -1,6 +1,7 @@
 package com.avos.sipra.sipagri.controllers;
 
 import com.avos.sipra.sipagri.annotations.XSSProtected;
+import com.avos.sipra.sipagri.enums.SupervisorProfile;
 import com.avos.sipra.sipagri.services.cores.SupervisorService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.SupervisorDTO;
@@ -57,10 +58,11 @@ public class SupervisorController {
     public ResponseEntity<PaginationResponseDTO<SupervisorDTO>> searchSupervisors(
             @RequestParam String search,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size) {
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false) SupervisorProfile profile) {
         Pageable pageable = PageRequest.of(page, size);
 
-        PaginationResponseDTO<SupervisorDTO> responseDTO = supervisorService.findAllPagedByParams(pageable, search);
+        PaginationResponseDTO<SupervisorDTO> responseDTO = supervisorService.findAllPagedByParams(pageable, search, profile);
         if (responseDTO.getData() == null) {
             return ResponseEntity.notFound().build();
         }
