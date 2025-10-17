@@ -20,6 +20,8 @@ public interface PlantationRepository extends JpaRepository<Plantation, Long> {
 
     Page<Plantation> findPlantationsByPlanter_Supervisor_Id(Pageable pageable, Long supervisorId);
 
+    Page<Plantation> findPlantationsByGpsLocation_displayNameContainingIgnoreCase(Pageable pageable, String village);
+
     /**
      * Somme de la surface totale cultivée
      */

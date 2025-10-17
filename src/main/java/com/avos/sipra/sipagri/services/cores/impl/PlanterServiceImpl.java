@@ -89,6 +89,13 @@ public class PlanterServiceImpl implements PlanterService {
         return getPlanterDTOPaginationResponseDTO(page);
     }
 
+    @Override
+    public PaginationResponseDTO<PlanterDTO> findAllPagedByVillage(Pageable pageable, String search) {
+        final Page<Planter> page = planterRepository.findPlanterByVillageContainingIgnoreCase(pageable, search);
+
+        return getPlanterDTOPaginationResponseDTO(page);
+    }
+
     private PaginationResponseDTO<PlanterDTO> getPlanterDTOPaginationResponseDTO(Page<Planter> page) {
         final int currentPage = page.getNumber();
         final int totalPages = page.getTotalPages();

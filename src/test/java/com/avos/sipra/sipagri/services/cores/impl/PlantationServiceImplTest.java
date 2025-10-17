@@ -130,7 +130,7 @@ class PlantationServiceImplTest {
         when(plantationRepository.findByProductions_id(1L)).thenReturn(Optional.of(plantation));
         when(plantationMapper.toDTO(plantation)).thenReturn(plantationDTO);
 
-        PlantationDTO result = plantationService.findByProductions_id(1L);
+        PlantationDTO result = plantationService.findByProductionsId(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -139,7 +139,7 @@ class PlantationServiceImplTest {
     @Test
     void findByProductionsId_shouldThrow_whenNotFound() {
         when(plantationRepository.findByProductions_id(1L)).thenReturn(Optional.empty());
-        assertThrows(NullPointerException.class, () -> plantationService.findByProductions_id(1L));
+        assertThrows(NullPointerException.class, () -> plantationService.findByProductionsId(1L));
     }
 
     // ---------- FIND ALL ----------

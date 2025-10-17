@@ -1,8 +1,6 @@
 package com.avos.sipra.sipagri.repositories;
 
 import com.avos.sipra.sipagri.entities.Production;
-import com.avos.sipra.sipagri.services.dtos.ChartDataDTO;
-import com.avos.sipra.sipagri.services.dtos.ProductionTrendDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +20,9 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
     Page<Production> findProductionsByPlantation_NameOrProductionInKg(Pageable pageable, String plantationName, String productionInKg);
 
     Page<Production> findProductionsByPlantation_Planter_Supervisor_Id(Pageable pageable, Long supervisorId);
+
+    @Query("SELECT p FROM Production p ORDER BY p.year")
+    List<Production> findAllOrderByYear();
 
     /**
      * Somme de la production totale
@@ -87,44 +87,4 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
     @Query("SELECT COALESCE(AVG(p.purchasePrice), 0.0) FROM Production p")
     Double avgPurchasePrice();
 
-    /**
-     * Productions d'une plantation
-     */
-    List<Production> findByPlantationId(Long plantationId);
-
-    /**
-     * Productions par année
-     */
-    @Query("SELECT p FROM Production p WHERE YEAR(p.year) = :year ORDER BY p.year")
-    List<Production> findByYear(@Param("year") int year);
-
-    /**
-     * Production maximale
-     */
-    @Query("SELECT MAX(p.productionInKg) FROM Production p")
-    Double findMaxProduction();
-
-    /**
-     * Production minimale
-     */
-    @Query("SELECT MIN(p.productionInKg) FROM Production p")
-    Double findMinProduction();
-
-    /**
-     * Revenus des productions payées
-     */
-    @Query("SELECT COALESCE(SUM(p.productionInKg * p.purchasePrice), 0.0) FROM Production p WHERE p.mustBePaid = false")
-    Double sumPaidRevenue();
-
-    /**
-     * Revenus des productions non payées
-     */
-    @Query("SELECT COALESCE(SUM(p.productionInKg * p.purchasePrice), 0.0) FROM Production p WHERE p.mustBePaid = true")
-    Double sumUnpaidRevenue();
-
-    /**
-     * Productions récentes
-     */
-    @Query("SELECT p FROM Production p ORDER BY p.createdAt DESC")
-    List<Production> findRecentProductions(@Param("limit") int limit);
 }

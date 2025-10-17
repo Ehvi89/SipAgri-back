@@ -70,11 +70,15 @@ public class PlantationController {
     @GetMapping("/search")
     public ResponseEntity<PaginationResponseDTO<PlantationDTO>> searchPlantations(
             @RequestParam String search,
+            @RequestParam(required = false, defaultValue = "false") Boolean village,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        PaginationResponseDTO<PlantationDTO> responseDTO = plantationService.findAllPagedByParams(pageable, search);
+        PaginationResponseDTO<PlantationDTO> responseDTO = Boolean.TRUE.equals(village) ?
+                plantationService.findAllPagedByVillage(pageable, search) :
+                plantationService.findAllPagedByParams(pageable, search);
+
         if (responseDTO.getData() == null) {
             return ResponseEntity.notFound().build();
         }

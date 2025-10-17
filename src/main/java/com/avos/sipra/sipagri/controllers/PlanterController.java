@@ -4,6 +4,7 @@ import com.avos.sipra.sipagri.annotations.XSSProtected;
 import com.avos.sipra.sipagri.services.cores.PlanterService;
 import com.avos.sipra.sipagri.services.dtos.PaginationResponseDTO;
 import com.avos.sipra.sipagri.services.dtos.PlanterDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/planters")
 public class PlanterController {
@@ -71,12 +73,15 @@ public class PlanterController {
     @GetMapping("/search")
     public ResponseEntity<PaginationResponseDTO<PlanterDTO>> searchPlanters(
             @RequestParam String search,
+            @RequestParam(required = false, defaultValue = "false") Boolean village,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
+        PaginationResponseDTO<PlanterDTO> responseDTO = Boolean.TRUE.equals(village) ?
+                planterService.findAllPagedByVillage(pageable, search) :
+                planterService.findAllPagedByParams(pageable, search);
 
-        PaginationResponseDTO<PlanterDTO> responseDTO = planterService.findAllPagedByParams(pageable, search);
-        if (responseDTO.getData() == null) {
+        if (responseDTO == null || responseDTO.getData() == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(responseDTO);
