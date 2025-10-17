@@ -18,6 +18,8 @@ public interface PlanterRepository extends JpaRepository<Planter, Long> {
 
     Page<Planter> findPlanterBySupervisor_Id(Long supervisorId, Pageable pageable);
 
+    Page<Planter> findPlanterByVillageContainingIgnoreCase(Pageable pageable, String village);
+
     /**
      * Compte les planteurs créés avant une date donnée
      */

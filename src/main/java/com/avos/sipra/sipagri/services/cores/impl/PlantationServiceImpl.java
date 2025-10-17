@@ -85,7 +85,7 @@ public class PlantationServiceImpl implements PlantationService {
     }
 
     @Override
-    public PlantationDTO findByProductions_id(Long id) {
+    public PlantationDTO findByProductionsId(Long id) {
         Optional<Plantation> plantation = plantationRepository.findByProductions_id(id);
         if (plantation.isPresent()) {
             return plantationMapper.toDTO(plantation.get());
@@ -113,6 +113,13 @@ public class PlantationServiceImpl implements PlantationService {
     @Override
     public PaginationResponseDTO<PlantationDTO> findAllPagedByParams(Pageable pageable, String params) {
         Page<Plantation> page =  plantationRepository.findPlantationsByNameContainingIgnoreCase(pageable, params);
+
+        return getPlantationDTOPaginationResponseDTO(page);
+    }
+
+    @Override
+    public PaginationResponseDTO<PlantationDTO> findAllPagedByVillage(Pageable pageable, String params) {
+        Page<Plantation> page =  plantationRepository.findPlantationsByGpsLocation_displayNameContainingIgnoreCase(pageable, params);
 
         return getPlantationDTOPaginationResponseDTO(page);
     }

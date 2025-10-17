@@ -73,7 +73,7 @@ public class DashboardServiceImpl implements DashboardService {
         resumes.add(new ResumeDTO(
                 "Revenus générés",
                 formatCurrency(totalRevenue),
-                '+' + formatCurrency((revenueGrowth * totalRevenue) / 100.0)
+                '+' + formatCurrency((revenueGrowth * totalRevenue) / 100.0) + " ce mois"
         ));
         log.debug("Revenus générés : {}", totalRevenue);
 
@@ -83,7 +83,7 @@ public class DashboardServiceImpl implements DashboardService {
         resumes.add(new ResumeDTO(
                 "Plantations actives",
                 String.valueOf(totalPlantations),
-                "+ " + (totalPlantations - previousPlantations) + " nouvelles"
+                "+ " + (totalPlantations - previousPlantations) + " nouvelles ce mois"
         ));
 
         return resumes;
@@ -93,7 +93,7 @@ public class DashboardServiceImpl implements DashboardService {
      * Récupère les données de production groupées par période
      */
     public List<ChartDataDTO> getProductionByPeriod(String period) {
-        List<Production> productions = productionRepository.findAll();
+        List<Production> productions = productionRepository.findAllOrderByYear();
         Map<String, Double> groupedData = new LinkedHashMap<>();
 
         for (Production production : productions) {
@@ -133,7 +133,6 @@ public class DashboardServiceImpl implements DashboardService {
 
         // Appel du repository avec des paramètres de type Date
         List<Production> productions = productionRepository.findByYearBetween(start, end);
-        log.debug("Productions récupérées : {}", productions);
 
         Map<YearMonth, Double> monthlyData = new TreeMap<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(MMM_YYYY, Locale.FRENCH);
@@ -310,7 +309,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     private String formatDateByPeriod(Date date, String period) {
         DateTimeFormatter formatter;
-        log.debug("format date by period : {}", period);
 
         // Conversion correcte de java.util.Date vers java.time.LocalDate
         LocalDate localDate = date.toInstant()

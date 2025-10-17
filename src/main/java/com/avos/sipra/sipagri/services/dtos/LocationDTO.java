@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class LocationDTO {
     private Double latitude;
     private Double longitude;
+    private String displayName;
 }

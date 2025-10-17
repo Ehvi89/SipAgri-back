@@ -29,7 +29,8 @@ public class PlantationSummaryDTO {
         if (plantation.getGpsLocation() != null) {
             this.gpsLocation = new LocationDTO(
                     plantation.getGpsLocation().getLatitude(),
-                    plantation.getGpsLocation().getLongitude()
+                    plantation.getGpsLocation().getLongitude(),
+                    plantation.getGpsLocation().getDisplayName()
             );
         }
 

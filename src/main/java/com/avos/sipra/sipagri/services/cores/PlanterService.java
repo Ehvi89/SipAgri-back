@@ -7,4 +7,6 @@ import org.springframework.data.domain.Pageable;
 public interface PlanterService extends CrudService<PlanterDTO, Long> {
 
     PaginationResponseDTO<PlanterDTO> findPlanterBySupervisor(Pageable pageable, Long supervisorId);
+
+    PaginationResponseDTO<PlanterDTO> findAllPagedByVillage(Pageable pageable, String params);
 }
