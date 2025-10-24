@@ -3,6 +3,7 @@ package com.avos.sipra.sipagri.services.mappers;
 import com.avos.sipra.sipagri.entities.Plantation;
 import com.avos.sipra.sipagri.entities.Production;
 import com.avos.sipra.sipagri.entities.Planter;
+import com.avos.sipra.sipagri.enums.PlantationStatus;
 import com.avos.sipra.sipagri.services.dtos.PlantationDTO;
 import com.avos.sipra.sipagri.services.dtos.ProductionDTO;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,8 @@ public class PlantationMapper {
                 .gpsLocation(plantationDTO.getGpsLocation())
                 .createdAt(plantationDTO.getCreatedAt())
                 .updatedAt(plantationDTO.getUpdatedAt())
+                .status(plantationDTO.getStatus())
+                .sector(plantationDTO.getSector())
                 .farmedArea(plantationDTO.getFarmedArea());
 
         // Mapper le kit si présent
@@ -44,7 +47,7 @@ public class PlantationMapper {
             builder.kit(kitMapper.toEntity(plantationDTO.getKit()));
         }
 
-        // Créer une référence au planter si l'ID est fourni
+        // Créer une référence au planteur si l'ID est fourni
         if (plantationDTO.getPlanterId() != null) {
             Planter planter = new Planter();
             planter.setId(plantationDTO.getPlanterId());
@@ -61,7 +64,7 @@ public class PlantationMapper {
                         production.setPlantation(plantation);
                         return production;
                     })
-                    .collect(Collectors.toList());
+                    .toList();
             plantation.setProductions(productions);
         } else {
             plantation.setProductions(new ArrayList<>());
@@ -88,10 +91,12 @@ public class PlantationMapper {
                 .farmedArea(plantation.getFarmedArea())
                 .createdAt(plantation.getCreatedAt())
                 .updatedAt(plantation.getUpdatedAt())
+                .status(plantation.getStatus())
+                .sector(plantation.getSector())
                 .productions(plantation.getProductions() != null && !plantation.getProductions().isEmpty() ?
                         plantation.getProductions().stream()
                                 .map(productionMapper::toDTO)
-                                .collect(Collectors.toList()) : null
+                                .toList() : null
                 )
                 .planterId(plantation.getPlanter() != null ? plantation.getPlanter().getId() : null)
                 .kit(plantation.getKit() != null ? kitMapper.toDTO(plantation.getKit()) : null)
@@ -121,8 +126,12 @@ public class PlantationMapper {
         if (plantationDTO.getFarmedArea() != null) {
             plantation.setFarmedArea(plantationDTO.getFarmedArea());
         }
+        if (plantationDTO.getSector() != null) {
+            plantation.setSector(plantationDTO.getSector());
+        }
         if (plantationDTO.getKit() != null) {
             plantation.setKit(kitMapper.toEntity(plantationDTO.getKit()));
+            plantation.setStatus(PlantationStatus.ACTIVE);
         }
         if (plantationDTO.getCreatedAt() != null) {
             plantation.setCreatedAt(plantationDTO.getCreatedAt());
@@ -137,6 +146,7 @@ public class PlantationMapper {
         }
         if (plantationDTO.getProductions() != null) {
             updateProductions(plantation, plantationDTO.getProductions());
+            plantation.setStatus(PlantationStatus.INACTIVE);
         }
 
         return plantation;
@@ -175,7 +185,7 @@ public class PlantationMapper {
                 if (existingProduction.isPresent()) {
                     productionMapper.partialUpdate(existingProduction.get(), dto);
                 } else {
-                    // La production existe en BD mais pas dans la liste actuelle
+                    // La production existe en BD, mais pas dans la liste actuelle
                     log.warn("Production avec ID {} introuvable dans la plantation {}",
                             dto.getId(), plantation.getId());
                 }

@@ -53,12 +53,6 @@ public class PlantationServiceImpl implements PlantationService {
         }
 
         plantation = plantationRepository.save(plantation);
-
-        // Mettre à jour la liste des plantations du planter
-        Planter planter = planterRepository.getReferenceById(plantation.getPlanter().getId());
-        planter.getPlantations().add(plantation);
-        planterRepository.save(planter);
-
         return plantationMapper.toDTO(plantation);
     }
 

@@ -106,6 +106,8 @@ databaseChangeLog:
                 latitude NUMBER(19,10),
                 longitude NUMBER(19,10),
                 display_name VARCHAR2(500),
+                status VARCHAR2(50) NOT NULL,
+                sector VARCHAR2(255) NOT NULL,
                 planter_id NUMBER(19),
                 kit_id NUMBER(19) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

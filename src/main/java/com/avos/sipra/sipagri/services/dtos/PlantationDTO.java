@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.services.dtos;
 
+import com.avos.sipra.sipagri.enums.PlantationStatus;
 import com.avos.sipra.sipagri.types.Location;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,10 @@ public class PlantationDTO {
     private Long planterId;
 
     private KitDTO kit;
+
+    private PlantationStatus status;
+
+    private String sector;
 
     private LocalDateTime createdAt;
 
