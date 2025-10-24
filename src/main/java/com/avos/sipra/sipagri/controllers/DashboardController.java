@@ -28,6 +28,26 @@ public class DashboardController {
     }
 
     /**
+     * ✨ NOUVEAU : Récupère la production par secteur avec filtre année
+     * @param year - Année à filtrer (optionnel)
+     */
+    @GetMapping("/production-by-sector")
+    public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getProductionBySector(
+            @RequestParam(required = false) Integer year) {
+        List<ChartDataDTO> data = dashboardService.getProductionBySector(year);
+        return ResponseEntity.ok(new ApiResponse<>(true, data, "Production par secteur récupérée"));
+    }
+
+    /**
+     * ✨ NOUVEAU : Récupère la liste des années disponibles
+     */
+    @GetMapping("/available-years")
+    public ResponseEntity<ApiResponse<List<Integer>>> getAvailableYears() {
+        List<Integer> years = dashboardService.getAvailableYears();
+        return ResponseEntity.ok(new ApiResponse<>(true, years, "Années disponibles récupérées"));
+    }
+
+    /**
      * Récupère les données de production groupées par période
      * @param period - week, month, quarter, year
      */
@@ -48,13 +68,11 @@ public class DashboardController {
     }
 
     /**
-     * Récupère les données de tendance de production dans le temps
-     * @param months - Nombre de mois à afficher
+     * ✨ MODIFIÉ : Récupère les données de tendance de production par année
      */
     @GetMapping("/production-trend")
-    public ResponseEntity<ApiResponse<List<ProductionTrendDTO>>> getProductionTrend(
-            @RequestParam(defaultValue = "12") int months) {
-        List<ProductionTrendDTO> data = dashboardService.getProductionTrend(months);
+    public ResponseEntity<ApiResponse<List<ProductionTrendDTO>>> getProductionTrend() {
+        List<ProductionTrendDTO> data = dashboardService.getProductionTrend();
         return ResponseEntity.ok(new ApiResponse<>(true, data, "Tendance de production récupérée"));
     }
 
@@ -132,5 +150,4 @@ public class DashboardController {
         PlanterDemographicsDTO demographics = dashboardService.getPlanterDemographics();
         return ResponseEntity.ok(new ApiResponse<>(true, demographics, "Démographie récupérée"));
     }
-
 }

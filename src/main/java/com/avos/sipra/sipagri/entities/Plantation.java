@@ -1,5 +1,6 @@
 package com.avos.sipra.sipagri.entities;
 
+import com.avos.sipra.sipagri.enums.PlantationStatus;
 import com.avos.sipra.sipagri.types.Location;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,10 @@ public class Plantation {
     @Column(name = "farmed_area")
     private Double farmedArea;
 
+    private PlantationStatus status;
+
+    private String sector;
+
     @Embedded
     private Location gpsLocation;
 
@@ -43,7 +48,7 @@ public class Plantation {
     @OneToMany(mappedBy = "plantation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Production> productions;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "kit_id")
     private Kit kit;
 

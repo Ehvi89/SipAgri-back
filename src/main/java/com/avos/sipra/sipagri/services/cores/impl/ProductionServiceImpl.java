@@ -2,6 +2,7 @@ package com.avos.sipra.sipagri.services.cores.impl;
 
 import com.avos.sipra.sipagri.entities.Plantation;
 import com.avos.sipra.sipagri.entities.Production;
+import com.avos.sipra.sipagri.enums.PlantationStatus;
 import com.avos.sipra.sipagri.repositories.PlantationRepository;
 import com.avos.sipra.sipagri.repositories.ProductionRepository;
 import com.avos.sipra.sipagri.services.cores.CalculationService;
@@ -74,7 +75,7 @@ public class ProductionServiceImpl implements ProductionService{
             }
 
             Plantation plantation = plantationRepository.getReferenceById(production.getPlantation().getId());
-            plantation.getProductions().add(production);
+            plantation.setStatus(PlantationStatus.INACTIVE);
             plantationRepository.save(plantation);
         }
 
