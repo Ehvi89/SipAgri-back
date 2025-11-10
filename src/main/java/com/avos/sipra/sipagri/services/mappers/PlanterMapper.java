@@ -29,6 +29,7 @@ public class PlanterMapper {
                 .supervisor(supervisorMapper.toDTO(planter.getSupervisor()))
                 .createdAt(planter.getCreatedAt())
                 .updatedAt(planter.getUpdatedAt())
+                .paymentMethod(planter.getPaymentMethod())
                 .plantations(planter.getPlantations() != null ? 
                     planter.getPlantations().stream()
                         .map(plantationMapper::toDTO)
@@ -52,6 +53,7 @@ public class PlanterMapper {
                 .supervisor(supervisorMapper.toEntity(planterDTO.getSupervisor()))
                 .createdAt(planterDTO.getCreatedAt())
                 .updatedAt(planterDTO.getUpdatedAt())
+                .paymentMethod(planterDTO.getPaymentMethod())
                 .plantations(planterDTO.getPlantations() != null ?
                     planterDTO.getPlantations().stream()
                         .map(plantationMapper::toEntity)
@@ -76,6 +78,9 @@ public class PlanterMapper {
         }
         if (planterDTO.getMaritalStatus() != null) {
             planter.setMaritalStatus(planterDTO.getMaritalStatus());
+        }
+        if (planterDTO.getPaymentMethod() != null) {
+            planter.setPaymentMethod(planterDTO.getPaymentMethod());
         }
         if (planterDTO.getGender() != null) {
             planter.setGender(planterDTO.getGender());

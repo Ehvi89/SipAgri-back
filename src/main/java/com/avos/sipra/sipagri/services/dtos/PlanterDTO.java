@@ -2,6 +2,7 @@ package com.avos.sipra.sipagri.services.dtos;
 
 import com.avos.sipra.sipagri.enums.HumanGender;
 import com.avos.sipra.sipagri.enums.MaritalStatus;
+import com.avos.sipra.sipagri.enums.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,8 @@ public class PlanterDTO {
     private String phoneNumber;
     
     private MaritalStatus maritalStatus;
+
+    private PaymentMethod paymentMethod;
 
     private Integer childrenNumber;
 

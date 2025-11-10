@@ -2,6 +2,7 @@ package com.avos.sipra.sipagri.entities;
 
 import com.avos.sipra.sipagri.enums.HumanGender;
 import com.avos.sipra.sipagri.enums.MaritalStatus;
+import com.avos.sipra.sipagri.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +46,10 @@ public class Planter {
     @Column(name = "marital_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private MaritalStatus maritalStatus;
+
+    @Column(name = "payment_method", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     @Column(name = "children_number", nullable = false)
     private Integer childrenNumber;
