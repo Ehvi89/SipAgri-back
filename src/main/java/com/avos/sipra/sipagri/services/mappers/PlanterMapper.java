@@ -29,7 +29,7 @@ public class PlanterMapper {
                 .supervisor(supervisorMapper.toDTO(planter.getSupervisor()))
                 .createdAt(planter.getCreatedAt())
                 .updatedAt(planter.getUpdatedAt())
-                .paymentMethod(planter.getPaymentMethod)
+                .paymentMethod(planter.getPaymentMethod())
                 .plantations(planter.getPlantations() != null ? 
                     planter.getPlantations().stream()
                         .map(plantationMapper::toDTO)
@@ -53,7 +53,7 @@ public class PlanterMapper {
                 .supervisor(supervisorMapper.toEntity(planterDTO.getSupervisor()))
                 .createdAt(planterDTO.getCreatedAt())
                 .updatedAt(planterDTO.getUpdatedAt())
-                .paymentMethod(planterDTO.getPaymentMethod)
+                .paymentMethod(planterDTO.getPaymentMethod())
                 .plantations(planterDTO.getPlantations() != null ?
                     planterDTO.getPlantations().stream()
                         .map(plantationMapper::toEntity)
