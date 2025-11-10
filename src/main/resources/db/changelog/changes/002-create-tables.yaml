@@ -82,6 +82,7 @@ databaseChangeLog:
                 gender VARCHAR2(20) NOT NULL,
                 phone_number VARCHAR2(50),
                 marital_status VARCHAR2(50) NOT NULL,
+                payment_method VARCHAR2(50) NOT NULL,
                 children_number NUMBER(10) NOT NULL,
                 village VARCHAR2(100) NOT NULL,
                 supervisor_id NUMBER(19),
