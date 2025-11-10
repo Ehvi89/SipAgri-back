@@ -29,7 +29,7 @@ public class PlanterMapper {
                 .supervisor(supervisorMapper.toDTO(planter.getSupervisor()))
                 .createdAt(planter.getCreatedAt())
                 .updatedAt(planter.getUpdatedAt())
-                .paymentMetod(planter.getPaymentMethod)
+                .paymentMethod(planter.getPaymentMethod)
                 .plantations(planter.getPlantations() != null ? 
                     planter.getPlantations().stream()
                         .map(plantationMapper::toDTO)
