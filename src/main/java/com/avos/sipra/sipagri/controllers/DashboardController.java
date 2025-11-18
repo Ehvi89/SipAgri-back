@@ -52,7 +52,7 @@ public class DashboardController {
     @GetMapping("/production-by-sector")
     public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getProductionBySector(
             @RequestParam(required = false) Integer year,
-            @RequestParam() Long supervisor) {
+            @RequestParam(required = false) Long supervisor) {
         List<ChartDataDTO> data = supervisor != null ?
                 dashboardService.getProductionBySupervisorBySector(supervisor, year) :
                 dashboardService.getProductionBySector(year);
@@ -68,7 +68,7 @@ public class DashboardController {
      */
     @GetMapping("/available-years")
     public ResponseEntity<ApiResponse<List<Integer>>> getAvailableYears(
-            @RequestParam() Long supervisor
+            @RequestParam(required = false) Long supervisor
     ) {
         List<Integer> years = supervisor != null ?
                 dashboardService.getAvailableYearsBySupervisor(supervisor) :
@@ -88,7 +88,7 @@ public class DashboardController {
     @GetMapping("/production-by-period")
     public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getProductionByPeriod(
             @RequestParam(defaultValue = "month") String period,
-            @RequestParam() Long supervisor) {
+            @RequestParam(required = false) Long supervisor) {
         List<ChartDataDTO> data = supervisor != null ?
                 dashboardService.getProductionBySupervisorByPeriod(supervisor, period) :
                 dashboardService.getProductionByPeriod(period);
@@ -104,7 +104,7 @@ public class DashboardController {
      */
     @GetMapping("/production-by-plantation")
     public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getProductionByPlantation(
-            @RequestParam() Long supervisor
+            @RequestParam(required = false) Long supervisor
     ) {
         List<ChartDataDTO> data = supervisor != null ?
                 dashboardService.getProductionByPlantationBySupervisor(supervisor) :
@@ -121,7 +121,7 @@ public class DashboardController {
      */
     @GetMapping("/production-trend")
     public ResponseEntity<ApiResponse<List<ProductionTrendDTO>>> getProductionTrend(
-            @RequestParam() Long supervisor
+            @RequestParam(required = false) Long supervisor
     ) {
         List<ProductionTrendDTO> data = supervisor != null ?
                 dashboardService.getProductionTrendBySupervisor(supervisor) :
