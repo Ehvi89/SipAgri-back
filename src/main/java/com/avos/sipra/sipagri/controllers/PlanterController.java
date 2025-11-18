@@ -55,7 +55,7 @@ public class PlanterController {
     @GetMapping("/all")
     public ResponseEntity<List<PlanterDTO>> getAllPlanters() {
         List<PlanterDTO> planterDTO = planterService.findAll();
-        if (planterDTO.isEmpty()) {
+        if (planterDTO == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(planterDTO);

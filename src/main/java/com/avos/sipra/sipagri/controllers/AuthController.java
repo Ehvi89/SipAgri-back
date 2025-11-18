@@ -28,6 +28,19 @@ import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
+/**
+ * REST controller exposing authentication and password recovery endpoints.
+ * <p>
+ * Endpoints:
+ * <ul>
+ *   <li>POST /api/v1/auth/login — Authenticate a user and return a JWT plus supervisor profile</li>
+ *   <li>POST /api/v1/auth/register — Create a new supervisor account</li>
+ *   <li>POST /api/v1/auth/forgot-password — Initiate password reset and send a reset token by email</li>
+ *   <li>POST /api/v1/auth/reset-password — Reset password using a previously issued token</li>
+ *   <li>POST /api/v1/auth/email-exist — Check if an email is already registered</li>
+ * </ul>
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -58,6 +71,14 @@ public class AuthController {
             this.authService = authService;
     }
 
+    /**
+     * Authenticate a supervisor with email and password.
+     *
+     * Request body: {@link LoginRequestDto} containing credentials.
+     * Response: {@link LoginResponseDto} with a signed JWT token and the supervisor profile on success.
+     *
+     * @return 200 OK with token and profile if authentication succeeds; 401 Unauthorized otherwise
+     */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -74,6 +95,12 @@ public class AuthController {
     }
 
 
+    /**
+     * Register a new supervisor account.
+     *
+     * @param usersDTO the supervisor payload to create
+     * @return 201 Created with the created supervisor; 409 Conflict if email already exists
+     */
     @PostMapping("/register")
     @XSSProtected
     public ResponseEntity<SupervisorDTO> createUser(@RequestBody SupervisorDTO usersDTO) {
@@ -86,6 +113,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Initiate a password reset flow by generating a token and sending a reset email.
+     *
+     * @param email email address of the supervisor account
+     * @return 200 OK if a reset email was triggered; 404 Not Found if the email is unknown
+     */
     @PostMapping("/forgot-password")
     @XSSProtected
     public ResponseEntity<Map<String, Object>> forgotPassword(@RequestBody String email) {
@@ -106,6 +139,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Reset a supervisor's password using a valid reset token.
+     *
+     * @param dto carries the reset {@code token} and the {@code newPassword}
+     * @return 200 OK when the password is updated; 401 Unauthorized if token is invalid/expired
+     */
     @PostMapping("/reset-password")
     public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody PasswordResetDto dto) {
         try {
@@ -133,6 +172,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Check whether a supervisor email already exists.
+     *
+     * @param email email address to check
+     * @return 200 OK with the supervisor payload if found; 404 Not Found otherwise
+     */
     @PostMapping("/email-exist")
     public ResponseEntity<SupervisorDTO> checkEmailExist(@RequestBody String email) {
         SupervisorDTO supervisor = supervisorService.findByEmail(email);
@@ -143,6 +188,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Fallback error endpoint used by Spring Boot to render generic errors as JSON.
+     *
+     * @param request the HTTP request containing the error status attribute
+     * @return a JSON body with fields: error, message, status
+     */
     @RequestMapping("/error")
     public ResponseEntity<Map<String, Object>> handleError(HttpServletRequest request) {
         HttpStatus httpStatus = getStatus(request);

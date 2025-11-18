@@ -11,7 +11,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+/**
+ * Response payload for successful authentication.
+ */
 public class LoginResponseDto implements Serializable {
+    /** Signed JWT token to be used in Authorization header (Bearer). */
     private String token;
+    /** Authenticated supervisor profile. */
     private SupervisorDTO supervisor;
 }
