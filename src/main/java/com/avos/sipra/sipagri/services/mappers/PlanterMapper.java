@@ -5,6 +5,17 @@ import com.avos.sipra.sipagri.services.dtos.PlanterDTO;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Mapper responsible for converting between {@link com.avos.sipra.sipagri.entities.Planter}
+ * entities and {@link com.avos.sipra.sipagri.services.dtos.PlanterDTO} objects.
+ * <p>
+ * Notes:
+ * <ul>
+ *   <li>Nested relations (supervisor, plantations) are mapped using dedicated mappers.</li>
+ *   <li>Collections are mapped using stream transformations and may be {@code null}.</li>
+ * </ul>
+ * </p>
+ */
 public class PlanterMapper {
 
     private final SupervisorMapper supervisorMapper;
@@ -15,6 +26,12 @@ public class PlanterMapper {
         this.plantationMapper = plantationMapper;
         this.supervisorMapper = supervisorMapper;
     }
+    /**
+     * Maps a {@link com.avos.sipra.sipagri.entities.Planter} entity to a {@link com.avos.sipra.sipagri.services.dtos.PlanterDTO}.
+     *
+     * @param planter entity to map (must not be null)
+     * @return a new DTO instance reflecting the entity state
+     */
     public PlanterDTO toDTO(Planter planter) {
         return PlanterDTO.builder()
                 .id(planter.getId())

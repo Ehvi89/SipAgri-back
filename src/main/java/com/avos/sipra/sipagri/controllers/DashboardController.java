@@ -16,10 +16,17 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class DashboardController {
 
+    /**
+     *
+     */
     private final DashboardService dashboardService;
 
     /**
-     * Récupère les statistiques de résumé du dashboard
+     * Retrieves a list of resumes data.
+     *
+     * @return a ResponseEntity containing an ApiResponse with a list of ResumeDTOs.
+     *         The ApiResponse includes a success flag, the list of ResumeDTOs as data,
+     *         and a message indicating successful retrieval.
      */
     @GetMapping("/resumes")
     public ResponseEntity<ApiResponse<List<ResumeDTO>>> getResumesData() {
@@ -27,127 +34,98 @@ public class DashboardController {
         return ResponseEntity.ok(new ApiResponse<>(true, resumes, "Statistiques récupérées avec succès"));
     }
 
+    @GetMapping("/resumes-by-supervisor")
+    public ResponseEntity<ApiResponse<List<ResumeDTO>>> getResumesDataBySupervisor(@RequestParam Long supervisor) {
+        List<ResumeDTO> resumes = dashboardService.getResumesDataBySupervisor(supervisor);
+        return ResponseEntity.ok(new ApiResponse<>(true, resumes, "Statistiques récupérées avec succès"));
+    }
+
     /**
-     * ✨ NOUVEAU : Récupère la production par secteur avec filtre année
-     * @param year - Année à filtrer (optionnel)
+     * Retrieves production data grouped by sector for a specified year.
+     *
+     * @param year an optional parameter specifying the year for which production data is to be retrieved.
+     *             If not provided, the data for all available years will be returned.
+     * @return a ResponseEntity containing an ApiResponse with a list of ChartDataDTO objects.
+     *         The ApiResponse includes a success flag, the production data grouped by sector as data,
+     *         and a message indicating successful retrieval.
      */
     @GetMapping("/production-by-sector")
     public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getProductionBySector(
-            @RequestParam(required = false) Integer year) {
-        List<ChartDataDTO> data = dashboardService.getProductionBySector(year);
+            @RequestParam(required = false) Integer year,
+            @RequestParam() Long supervisor) {
+        List<ChartDataDTO> data = supervisor != null ?
+                dashboardService.getProductionBySupervisorBySector(supervisor, year) :
+                dashboardService.getProductionBySector(year);
         return ResponseEntity.ok(new ApiResponse<>(true, data, "Production par secteur récupérée"));
     }
 
     /**
-     * ✨ NOUVEAU : Récupère la liste des années disponibles
+     * Retrieves a list of available years.
+     *
+     * @return a ResponseEntity containing an ApiResponse with a list of integers.
+     *         The ApiResponse includes a success flag, the list of available years as data,
+     *         and a success message indicating the retrieval.
      */
     @GetMapping("/available-years")
-    public ResponseEntity<ApiResponse<List<Integer>>> getAvailableYears() {
-        List<Integer> years = dashboardService.getAvailableYears();
+    public ResponseEntity<ApiResponse<List<Integer>>> getAvailableYears(
+            @RequestParam() Long supervisor
+    ) {
+        List<Integer> years = supervisor != null ?
+                dashboardService.getAvailableYearsBySupervisor(supervisor) :
+                dashboardService.getAvailableYears();
         return ResponseEntity.ok(new ApiResponse<>(true, years, "Années disponibles récupérées"));
     }
 
     /**
-     * Récupère les données de production groupées par période
-     * @param period - week, month, quarter, year
+     * Retrieves production data based on the specified time period.
+     *
+     * @param period the period for which the production data should be retrieved. Default is "month".
+     *               Accepted values typically include predefined time intervals such as "month", "year", etc.
+     * @return a ResponseEntity containing an ApiResponse with a list of ChartDataDTO objects.
+     *         The ApiResponse includes a success flag, the list of ChartDataDTOs as data,
+     *         and a message indicating successful retrieval of production data by period.
      */
     @GetMapping("/production-by-period")
     public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getProductionByPeriod(
-            @RequestParam(defaultValue = "month") String period) {
-        List<ChartDataDTO> data = dashboardService.getProductionByPeriod(period);
+            @RequestParam(defaultValue = "month") String period,
+            @RequestParam() Long supervisor) {
+        List<ChartDataDTO> data = supervisor != null ?
+                dashboardService.getProductionBySupervisorByPeriod(supervisor, period) :
+                dashboardService.getProductionByPeriod(period);
         return ResponseEntity.ok(new ApiResponse<>(true, data, "Production par période récupérée"));
     }
 
     /**
-     * Récupère la répartition de production par plantation
+     * Retrieves production data grouped by plantation.
+     *
+     * @return a ResponseEntity containing an ApiResponse with a list of ChartDataDTO objects.
+     *         The ApiResponse includes a success flag, the list of ChartDataDTOs as data,
+     *         and a message indicating successful retrieval of production data by plantation.
      */
     @GetMapping("/production-by-plantation")
-    public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getProductionByPlantation() {
-        List<ChartDataDTO> data = dashboardService.getProductionByPlantation();
+    public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getProductionByPlantation(
+            @RequestParam() Long supervisor
+    ) {
+        List<ChartDataDTO> data = supervisor != null ?
+                dashboardService.getProductionByPlantationBySupervisor(supervisor) :
+                dashboardService.getProductionByPlantation();
         return ResponseEntity.ok(new ApiResponse<>(true, data, "Production par plantation récupérée"));
     }
 
     /**
-     * ✨ MODIFIÉ : Récupère les données de tendance de production par année
+     * Retrieves the production trend data.
+     *
+     * @return a ResponseEntity containing an ApiResponse with a list of ProductionTrendDTO.
+     *         The ApiResponse includes a success flag, the list of ProductionTrendDTO as data,
+     *         and a message indicating successful retrieval of the production trend.
      */
     @GetMapping("/production-trend")
-    public ResponseEntity<ApiResponse<List<ProductionTrendDTO>>> getProductionTrend() {
-        List<ProductionTrendDTO> data = dashboardService.getProductionTrend();
+    public ResponseEntity<ApiResponse<List<ProductionTrendDTO>>> getProductionTrend(
+            @RequestParam() Long supervisor
+    ) {
+        List<ProductionTrendDTO> data = supervisor != null ?
+                dashboardService.getProductionTrendBySupervisor(supervisor) :
+                dashboardService.getProductionTrend();
         return ResponseEntity.ok(new ApiResponse<>(true, data, "Tendance de production récupérée"));
-    }
-
-    /**
-     * Récupère les détails d'un planteur avec ses plantations et productions
-     */
-    @GetMapping("/planter/{planterId}")
-    public ResponseEntity<ApiResponse<PlanterDetailsDTO>> getPlanterDetails(
-            @PathVariable Long planterId) {
-        PlanterDetailsDTO details = dashboardService.getPlanterDetails(planterId);
-        return ResponseEntity.ok(new ApiResponse<>(true, details, "Détails du planteur récupérés"));
-    }
-
-    /**
-     * Récupère les planteurs avec le plus de production
-     */
-    @GetMapping("/top-planters")
-    public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getTopPlanters(
-            @RequestParam(defaultValue = "10") int limit) {
-        List<ChartDataDTO> data = dashboardService.getTopPlanters(limit);
-        return ResponseEntity.ok(new ApiResponse<>(true, data, "Top planteurs récupérés"));
-    }
-
-    /**
-     * Récupère les plantations avec le plus de surface cultivée
-     */
-    @GetMapping("/top-plantations-by-area")
-    public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getTopPlantationsByArea(
-            @RequestParam(defaultValue = "10") int limit) {
-        List<ChartDataDTO> data = dashboardService.getTopPlantationsByArea(limit);
-        return ResponseEntity.ok(new ApiResponse<>(true, data, "Top plantations récupérées"));
-    }
-
-    /**
-     * Récupère les statistiques de paiement
-     */
-    @GetMapping("/payment-statistics")
-    public ResponseEntity<ApiResponse<PaymentStatisticsDTO>> getPaymentStatistics() {
-        PaymentStatisticsDTO stats = dashboardService.getPaymentStatistics();
-        return ResponseEntity.ok(new ApiResponse<>(true, stats, "Statistiques de paiement récupérées"));
-    }
-
-    /**
-     * Récupère la répartition des planteurs par village
-     */
-    @GetMapping("/planters-by-village")
-    public ResponseEntity<ApiResponse<List<ChartDataDTO>>> getPlantersByVillage() {
-        List<ChartDataDTO> data = dashboardService.getPlantersByVillage();
-        return ResponseEntity.ok(new ApiResponse<>(true, data, "Répartition par village récupérée"));
-    }
-
-    /**
-     * Récupère la production moyenne par hectare
-     */
-    @GetMapping("/avg-production-per-hectare")
-    public ResponseEntity<ApiResponse<Double>> getAverageProductionPerHectare() {
-        Double avg = dashboardService.getAverageProductionPerHectare();
-        return ResponseEntity.ok(new ApiResponse<>(true, avg, "Production moyenne calculée"));
-    }
-
-    /**
-     * Récupère le prix d'achat moyen par kg
-     */
-    @GetMapping("/avg-purchase-price")
-    public ResponseEntity<ApiResponse<Double>> getAveragePurchasePrice() {
-        Double avg = dashboardService.getAveragePurchasePrice();
-        return ResponseEntity.ok(new ApiResponse<>(true, avg, "Prix moyen calculé"));
-    }
-
-    /**
-     * Récupère les statistiques démographiques des planteurs
-     */
-    @GetMapping("/planter-demographics")
-    public ResponseEntity<ApiResponse<PlanterDemographicsDTO>> getPlanterDemographics() {
-        PlanterDemographicsDTO demographics = dashboardService.getPlanterDemographics();
-        return ResponseEntity.ok(new ApiResponse<>(true, demographics, "Démographie récupérée"));
     }
 }

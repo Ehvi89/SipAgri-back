@@ -1,3 +1,6 @@
+# Defines Oracle sequences used by the application tables.
+# Important: Keep start values in sync with existing data when migrating legacy DBs.
+
 databaseChangeLog:
   - changeSet:
       id: 001-create-sequences

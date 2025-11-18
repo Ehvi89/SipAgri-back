@@ -17,6 +17,14 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Data Transfer Object representing a {@code Planter} for API requests/responses.
+ * <p>
+ * Mirrors the {@link com.avos.sipra.sipagri.entities.Planter} entity but is tailored for
+ * serialization and transport. It may omit internal fields and include nested DTOs
+ * for convenience (e.g., {@link SupervisorDTO}, {@link PlantationDTO}).
+ * </p>
+ */
 public class PlanterDTO {
     private Long id;
 

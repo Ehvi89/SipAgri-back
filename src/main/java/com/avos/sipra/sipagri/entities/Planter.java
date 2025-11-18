@@ -21,6 +21,16 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name = "Planters")
+/**
+ * JPA entity representing a planter (farmer) registered in the SIPAGRI program.
+ * <p>
+ * Mapped to the {@code Planters} table. Relationships:
+ * <ul>
+ *   <li>{@code supervisor}: Many planters can be supervised by one supervisor</li>
+ *   <li>{@code plantations}: One planter can have many plantations</li>
+ * </ul>
+ * </p>
+ */
 public class Planter {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "planter_seq")

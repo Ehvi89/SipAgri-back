@@ -1,3 +1,6 @@
+# Establishes foreign key constraints between core domain tables.
+# On delete behaviors are chosen per domain rules (CASCADE/RESTRICT/SET NULL).
+
 databaseChangeLog:
   - changeSet:
       id: 004-create-foreign-keys

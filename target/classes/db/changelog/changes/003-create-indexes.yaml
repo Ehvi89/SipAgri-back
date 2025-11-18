@@ -1,3 +1,7 @@
+# Creates indexes and primary keys for core tables.
+# Tablespace: SIPAGRI_INDEX for all indexes; PKs use indexes in this tablespace.
+# Note: Keep naming consistent (idx_*, pk_*); avoid altering applied changesets.
+
 databaseChangeLog:
   # Index pour la table supervisors
   - changeSet:

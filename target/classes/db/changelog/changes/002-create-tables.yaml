@@ -1,3 +1,7 @@
+# Creates core domain tables for SipAgri.
+# Tablespace: SIPAGRI_DATA for all base tables; indexes are defined in a separate changeset.
+# Note: Do not alter applied changesets; append new files for schema evolution.
+
 databaseChangeLog:
   - changeSet:
       id: 002-create-supervisors-table

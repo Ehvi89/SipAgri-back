@@ -11,7 +11,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+/**
+ * Request payload for authentication.
+ */
 public class LoginRequestDto implements Serializable {
+    /** User email (also used as username). */
     private String email;
+    /** Plaintext password to authenticate. */
     private String password;
 }
