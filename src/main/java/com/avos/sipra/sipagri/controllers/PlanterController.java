@@ -73,11 +73,11 @@ public class PlanterController {
     @GetMapping("/search")
     public ResponseEntity<PaginationResponseDTO<PlanterDTO>> searchPlanters(
             @RequestParam String search,
-            @RequestParam(required = false, defaultValue = "false") Boolean village,
+            @RequestParam(required = false, defaultValue = "false") String criteria,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        PaginationResponseDTO<PlanterDTO> responseDTO = Boolean.TRUE.equals(village) ?
+        PaginationResponseDTO<PlanterDTO> responseDTO = "village".equalsIgnoreCase(criteria) ?
                 planterService.findAllPagedByVillage(pageable, search) :
                 planterService.findAllPagedByParams(pageable, search);
 

@@ -32,6 +32,8 @@ public interface PlantationRepository extends JpaRepository<Plantation, Long> {
      */
     Page<Plantation> findPlantationsByNameContainingIgnoreCase(Pageable pageable, String name);
 
+    Page<Plantation> findPlantationsByNameContainingIgnoreCaseAndPlanter_Supervisor_Id(Pageable pageable, String name, Long supervisorId);
+
     /**
      * Retrieves a paginated list of plantations managed by a planter whose supervisor matches
      * the given supervisor ID.
@@ -51,6 +53,12 @@ public interface PlantationRepository extends JpaRepository<Plantation, Long> {
      * @return a paginated list of plantations matching the specified criteria
      */
     Page<Plantation> findPlantationsByGpsLocation_displayNameContainingIgnoreCase(Pageable pageable, String village);
+
+    Page<Plantation> findPlantationsByGpsLocation_displayNameContainingIgnoreCaseAndPlanter_Supervisor_Id(Pageable pageable, String village, Long supervisorId);
+
+    Page<Plantation> findPlantationsByStatus(Pageable pageable, PlantationStatus status);
+
+    Page<Plantation> findPlantationsByStatusAndPlanter_Supervisor_Id(Pageable pageable, PlantationStatus status, Long supervisorId);
 
     /**
      * Counts the total number of plantations with the specified status.
