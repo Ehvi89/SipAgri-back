@@ -176,6 +176,22 @@ public class PlantationServiceImpl implements PlantationService {
     }
 
     /**
+     * Retrieves a list of PlantationDTO objects associated with a specific supervisor.
+     *
+     * @param supervisorId the ID of the supervisor whose plantations are to be retrieved
+     * @return a list of PlantationDTO objects corresponding to the plantations managed by the specified supervisor
+     */
+    @Override
+    public List<PlantationDTO> findAll(Long supervisorId) {
+        List<Plantation> plantations = plantationRepository.findPlantationByPlanter_Supervisor_Id(supervisorId);
+        List<PlantationDTO> plantationDTOS = new ArrayList<>();
+        for (Plantation plantation : plantations) {
+            plantationDTOS.add(plantationMapper.toDTO(plantation));
+        }
+        return plantationDTOS;
+    }
+
+    /**
      * Retrieves a paginated list of plantations from the repository, maps them to DTOs,
      * and returns the result wrapped in a PaginationResponseDTO object.
      *
@@ -205,6 +221,14 @@ public class PlantationServiceImpl implements PlantationService {
         return getPlantationDTOPaginationResponseDTO(page);
     }
 
+    /**
+     * Retrieves a paginated list of plantations filtered by the specified parameters.
+     *
+     * @param pageable the pagination and sorting information
+     * @param params the filter parameter for plantation names
+     * @param supersiorId the ID of the supervisor to filter plantations by
+     * @return a paginated response containing a list of PlantationDTO objects
+     */
     @Override
     public PaginationResponseDTO<PlantationDTO> findAllPagedByParams(Pageable pageable, String params, Long supersiorId) {
         Page<Plantation> page =  plantationRepository.findPlantationsByNameContainingIgnoreCaseAndPlanter_Supervisor_Id(pageable, params, supersiorId);
@@ -227,6 +251,14 @@ public class PlantationServiceImpl implements PlantationService {
         return getPlantationDTOPaginationResponseDTO(page);
     }
 
+    /**
+     * Retrieves a paginated list of plantations filtered by village name and supervisor ID.
+     *
+     * @param pageable the pagination information including page number and size
+     * @param village the name of the village to filter plantations by
+     * @param supervisorId the ID of the supervisor to filter plantations by
+     * @return a {@link PaginationResponseDTO} containing a paginated list of {@link PlantationDTO}
+     */
     @Override
     public PaginationResponseDTO<PlantationDTO> findAllPagedByVillage(Pageable pageable, String village, Long supervisorId) {
         Page<Plantation> page =  plantationRepository.findPlantationsByGpsLocation_displayNameContainingIgnoreCaseAndPlanter_Supervisor_Id(pageable, village, supervisorId);
@@ -249,6 +281,14 @@ public class PlantationServiceImpl implements PlantationService {
         return getPlantationDTOPaginationResponseDTO(page);
     }
 
+    /**
+     * Finds a paginated list of plantations filtered by their status and supervisor ID.
+     *
+     * @param pageable the pagination and sorting information
+     * @param status the status of the plantations to filter by
+     * @param supervisorId the ID of the supervisor to filter plantations by
+     * @return a paginated response DTO containing the filtered plantations
+     */
     @Override
     public PaginationResponseDTO<PlantationDTO> findAllPagedByStatus(Pageable pageable, PlantationStatus status, Long supervisorId) {
         Page<Plantation> page =  plantationRepository.findPlantationsByStatusAndPlanter_Supervisor_Id(pageable, status, supervisorId);

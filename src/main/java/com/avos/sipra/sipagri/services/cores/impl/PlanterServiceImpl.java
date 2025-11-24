@@ -69,6 +69,16 @@ public class PlanterServiceImpl implements PlanterService {
     }
 
     @Override
+    public List<PlanterDTO> findAll(Long supervisorId) {
+        List<Planter> planterList = planterRepository.findPlanterBySupervisor_Id(supervisorId);
+        List<PlanterDTO> planterDTOList = new ArrayList<>();
+        for(Planter planter : planterList) {
+            planterDTOList.add(planterMapper.toDTO(planter));
+        }
+        return planterDTOList;
+    }
+
+    @Override
     public PaginationResponseDTO<PlanterDTO> findAllPaged(Pageable pageable) {
         final Page<Planter> page =  planterRepository.findAll(pageable);
 

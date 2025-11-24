@@ -11,6 +11,13 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Repository interface for managing {@link Planter} entities with CRUD operations
+ * and specialized query methods.
+ * <p>
+ * This interface extends {@link JpaRepository}, enabling standard DB operations
+ * as well as custom query methods for specific planter-related data retrieval.
+ */
 @Repository
 public interface PlanterRepository extends JpaRepository<Planter, Long> {
     /**
@@ -33,6 +40,14 @@ public interface PlanterRepository extends JpaRepository<Planter, Long> {
      * @return a paginated list of planters associated with the specified supervisor
      */
     Page<Planter> findPlanterBySupervisor_Id(Long supervisorId, Pageable pageable);
+
+    /**
+     * Retrieves a list of planters managed by a specific supervisor.
+     *
+     * @param supervisorId the ID of the supervisor whose planters are to be retrieved
+     * @return a list of planters associated with the specified supervisor
+     */
+    List<Planter> findPlanterBySupervisor_Id(Long supervisorId);
 
     /**
      * Finds a page of planters whose village names contain the specified string, ignoring case.

@@ -12,8 +12,20 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for managing and accessing {@link Plantation} entities.
+ * Provides methods for querying plantations, including advanced queries with filtering,
+ * pagination, and calculations.
+ */
 @Repository
 public interface PlantationRepository extends JpaRepository<Plantation, Long> {
+    /**
+     * Finds a list of plantations by the supervisor's ID.
+     *
+     * @param supervisorId the ID of the supervisor whose plantations are to be retrieved
+     * @return a list of Planter objects associated with the specified supervisor ID
+     */
+    List<Plantation> findPlantationByPlanter_Supervisor_Id(Long supervisorId);
     /**
      * Finds a plantation entity based on the ID of its associated productions.
      *
@@ -32,6 +44,16 @@ public interface PlantationRepository extends JpaRepository<Plantation, Long> {
      */
     Page<Plantation> findPlantationsByNameContainingIgnoreCase(Pageable pageable, String name);
 
+    /**
+     * Retrieves a paginated list of plantations where the name contains the specified substring,
+     * ignoring case sensitivity, and the plantations are managed by a planter whose supervisor
+     * has the given ID.
+     *
+     * @param pageable the pagination information, including page number, size, and sorting options
+     * @param name the substring to search for within plantation names; the search is case-insensitive
+     * @param supervisorId the ID of the supervisor to filter plantations by
+     * @return a paginated list of plantations matching the specified criteria
+     */
     Page<Plantation> findPlantationsByNameContainingIgnoreCaseAndPlanter_Supervisor_Id(Pageable pageable, String name, Long supervisorId);
 
     /**
@@ -54,10 +76,35 @@ public interface PlantationRepository extends JpaRepository<Plantation, Long> {
      */
     Page<Plantation> findPlantationsByGpsLocation_displayNameContainingIgnoreCase(Pageable pageable, String village);
 
+    /**
+     * Retrieves a paginated list of plantations where the GPS location's display name contains the specified village name
+     * (case-insensitive) and the plantations are managed by a planter whose supervisor has the given ID.
+     *
+     * @param pageable the pagination information, including page number, size, and sorting options
+     * @param village the village name to filter plantations by; the search is case-insensitive
+     * @param supervisorId the ID of the supervisor to filter plantations by
+     * @return a paginated list of plantations matching the specified GPS location, village name, and supervisor ID criteria
+     */
     Page<Plantation> findPlantationsByGpsLocation_displayNameContainingIgnoreCaseAndPlanter_Supervisor_Id(Pageable pageable, String village, Long supervisorId);
 
+    /**
+     * Retrieves a paginated list of plantations matching the specified status.
+     *
+     * @param pageable the pagination information, including page number, size, and sorting options
+     * @param status the status of the plantations to filter
+     * @return a paginated list of plantations with the specified status
+     */
     Page<Plantation> findPlantationsByStatus(Pageable pageable, PlantationStatus status);
 
+    /**
+     * Retrieves a paginated list of plantations filtered by their status and the ID of the supervisor
+     * managing the planter associated with the plantations.
+     *
+     * @param pageable the pagination information, including page number, size, and sorting options
+     * @param status the status to filter plantations by
+     * @param supervisorId the ID of the supervisor to filter plantations by
+     * @return a paginated list of plantations that match the specified status and supervisor ID
+     */
     Page<Plantation> findPlantationsByStatusAndPlanter_Supervisor_Id(Pageable pageable, PlantationStatus status, Long supervisorId);
 
     /**

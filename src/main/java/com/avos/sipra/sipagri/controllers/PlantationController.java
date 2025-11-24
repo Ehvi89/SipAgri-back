@@ -14,6 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+/**
+ * PlantationController is a RESTful controller class handling HTTP requests related to
+ * plantation management. It exposes endpoints for CRUD operations, pagination, and
+ * search functionalities related to plantation data.
+ *
+ * This class communicates with the PlantationService to delegate business logic
+ * execution and ensure proper handling of plantation-related requests, such as
+ * retrieving plantations, creating new plantations, or updating existing ones.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/plantations")
@@ -81,8 +90,12 @@ public class PlantationController {
      *         or a ResponseEntity with a not-found status if no data is available.
      */
     @GetMapping("/all")
-    public ResponseEntity<List<PlantationDTO>> getAllPlantations(){
-        List<PlantationDTO> plantationDTOs = plantationService.findAll();
+    public ResponseEntity<List<PlantationDTO>> getAllPlantations(
+            @RequestParam(required = false) Long supervisorId
+    ){
+        List<PlantationDTO> plantationDTOs = supervisorId != null ?
+                plantationService.findAll(supervisorId) :
+                plantationService.findAll();
         if(plantationDTOs == null){
             return ResponseEntity.notFound().build();
         }
