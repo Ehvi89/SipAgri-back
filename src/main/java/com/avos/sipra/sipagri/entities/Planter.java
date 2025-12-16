@@ -44,6 +44,23 @@ public class Planter {
     private Long id;
 
     /**
+     * Represents the unique identifier for a Planter entity.
+     * This field serves as the key for identified the Planter table in the database.
+     * <p>
+     * The value is generated according a structure:.
+     * - the las 2 digit of the current year.
+     * - "-" separator.
+     * - Application name "SIPAGRI"
+     * - four digit that represent the order of registration.
+     * - the first Letter of the firstname of the planter.
+     * - the first letter of the birthplace of the planter.
+     * exemple: 21-SIPAGRI0001AB
+     * The sequence is configured to increment by an allocation size of 1.
+     */
+    @Column(name = "uid_planter", nullable = false, length = 20, unique = true)
+    private String uidPlanter;
+
+    /**
      * Represents the last name of the planter.
      * <p>
      * This field is mapped to the "lastname" column in the database table and has the following constraints:

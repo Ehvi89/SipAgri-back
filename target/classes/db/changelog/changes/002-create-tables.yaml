@@ -97,6 +97,20 @@ databaseChangeLog:
             - sql: DROP TABLE Planters
 
   - changeSet:
+      id: 002-add-uidPlanter-column
+      author: Ehvi
+      changes:
+        - addColumn:
+            tableName: Planters
+            columns:
+              - column:
+                  name: uid_planter
+                  type: VARCHAR2(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  - changeSet:
       id: 002-create-plantations-table
       author: Ehvi
       changes:

@@ -94,4 +94,16 @@ public interface PlanterRepository extends JpaRepository<Planter, Long> {
      *         on or after the given date
      */
     Long countBySupervisor_IdAndCreatedAtGreaterThanEqual(Long supervisorId, LocalDateTime date);
+
+    /**
+     * Counts the number of planters created in the specified year.
+     *
+     * @param year the year from which to count the planters
+     * @return the number of planters created on or after the specified date
+     */
+    @Query("""
+            SELECT COUNT(p) FROM Planter p
+            WHERE YEAR(p.createdAt) = :year
+            """)
+    Long countPlantersByRegistrationYear(@Param("year") int year);
 }

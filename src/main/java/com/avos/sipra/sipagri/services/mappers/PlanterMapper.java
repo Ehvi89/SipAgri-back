@@ -35,6 +35,7 @@ public class PlanterMapper {
     public PlanterDTO toDTO(Planter planter) {
         return PlanterDTO.builder()
                 .id(planter.getId())
+                .uidPlanter(planter.getUidPlanter())
                 .firstname(planter.getFirstname())
                 .lastname(planter.getLastname())
                 .birthday(planter.getBirthday())
@@ -59,6 +60,7 @@ public class PlanterMapper {
     public Planter toEntity(PlanterDTO planterDTO) {
         return Planter.builder()
                 .id(planterDTO.getId())
+                .uidPlanter(planterDTO.getUidPlanter())
                 .firstname(planterDTO.getFirstname())
                 .lastname(planterDTO.getLastname())
                 .birthday(planterDTO.getBirthday())

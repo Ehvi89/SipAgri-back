@@ -28,6 +28,8 @@ import java.util.List;
 public class PlanterDTO {
     private Long id;
 
+    private String uidPlanter;
+
     private String firstname;
 
     private String lastname;
