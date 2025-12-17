@@ -122,7 +122,7 @@ class PlanterServiceImplTest {
         List<PlanterDTO> result = planterService.findAll();
 
         assertEquals(1, result.size());
-        assertEquals(1L, result.getFirst().getId());
+        assertEquals(1L, result.get(0).getId());
     }
 
     // ---------- FIND ALL PAGED ----------

@@ -171,7 +171,7 @@ class ProductionServiceImplTest {
         List<ProductionDTO> productionDTOS = List.of(new ProductionDTO());
 
         when(productionRepository.findAll()).thenReturn(productions);
-        when(productionMapper.toDTO(any())).thenReturn(productionDTOS.getFirst());
+        when(productionMapper.toDTO(any())).thenReturn(productionDTOS.get(0));
 
         List<ProductionDTO> result = productionService.findAll();
 
@@ -186,7 +186,7 @@ class ProductionServiceImplTest {
         PaginationResponseDTO<ProductionDTO> response = new PaginationResponseDTO<>(0, 1, 1, productionDTOs);
 
         when(productionRepository.findAll(pageable)).thenReturn(page);
-        when(productionMapper.toDTO(any())).thenReturn(productionDTOs.getFirst());
+        when(productionMapper.toDTO(any())).thenReturn(productionDTOs.get(0));
 
         PaginationResponseDTO<ProductionDTO> result = productionService.findAllPaged(pageable);
 
