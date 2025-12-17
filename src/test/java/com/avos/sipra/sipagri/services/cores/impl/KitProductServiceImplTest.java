@@ -166,7 +166,7 @@ class KitProductServiceImplTest {
         List<KitProductDTO> result = kitProductService.findAll();
 
         assertEquals(1, result.size());
-        assertEquals(kitProductDTO.getId(), result.getFirst().getId());
+        assertEquals(kitProductDTO.getId(), result.get(0).getId());
     }
 
     // ---------- FIND ALL PAGED ----------

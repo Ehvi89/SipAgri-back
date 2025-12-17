@@ -21,8 +21,8 @@ class PlanterRepositoryTest {
         List<Planter> planters = planterRepository.findAll();
 
         assertEquals(4, planters.size());
-        assertEquals("Traoré", planters.getFirst().getLastname());
-        assertEquals("Sokoura", planters.getFirst().getVillage());
+        assertEquals("Traoré", planters.get(0).getLastname());
+        assertEquals("Sokoura", planters.get(0).getVillage());
     }
 
     @Test

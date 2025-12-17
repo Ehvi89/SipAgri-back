@@ -20,7 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class KitServiceImplTest {
+class KitServiceTest {
 
     @Mock
     private KitMapper kitMapper;
@@ -142,7 +142,7 @@ class KitServiceImplTest {
         List<KitDTO> result = kitService.findAll();
 
         assertEquals(1, result.size());
-        assertEquals(1L, result.getFirst().getId());
+        assertEquals(1L, result.get(0).getId());
     }
 
     // ---------- FIND ALL PAGED ----------
