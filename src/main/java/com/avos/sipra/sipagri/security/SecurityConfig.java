@@ -21,8 +21,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-@Configuration
-@EnableWebSecurity
 /**
  * Spring Security configuration for the SipAgri REST API.
  * <p>
@@ -38,31 +36,59 @@ import java.util.List;
  *   <li>Customizes 401/403 error responses as JSON</li>
  * </ul>
  */
+@Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Represents the base URL of the frontend application.
+     * This value is dynamically injected from the application properties
+     * using the Spring Expression Language (SpEL) annotation.
+     * <p>
+     * It is typically used to define the frontend resource location
+     * for enabling cross-origin resource sharing (CORS) or redirecting users
+     * to the frontend application after specific operations.
+     */
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
+    /**
+     * JwtRequestFilter is a dependency that handles JSON Web Token (JWT) authentication for HTTP requests.
+     * It is responsible for validating incoming requests by processing the JWT token provided in the
+     * "Authorization" header, extracting and validating user details, and populating the Spring Security
+     * context with the authenticated user's credentials.
+     * <p>
+     * This filter ensures proper access control for protected endpoints by rejecting requests with missing,
+     * invalid, or expired tokens. Additionally, it identifies paths that are explicitly excluded from JWT
+     * filtering to allow unauthenticated access when appropriate.
+     * <p>
+     * The JwtRequestFilter is designed to integrate seamlessly with Spring Security's filter chain and is
+     * essential for enforcing authentication and authorization within the application's security framework.
+     */
     private final JwtRequestFilter jwtRequestFilter;
 
+    /**
+     * Constructs a new instance of {@link SecurityConfig}.
+     * This configuration class sets up the security infrastructure for the application
+     * by integrating the provided {@link JwtRequestFilter} to manage JWT-based authentication.
+     *
+     * @param jwtRequestFilter the filter responsible for handling and validating JWT tokens
+     *                         in incoming HTTP requests
+     */
     public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
         this.jwtRequestFilter = jwtRequestFilter;
     }
 
     /**
-     * Configures the main Spring Security filter chain.
+     * Configures a security filter chain for the application. This method sets up
+     * CORS, CSRF, session management, exception handling, and authentication filters
+     * for securing API endpoints.
      *
-     * - Enables CORS with configured origins
-     * - Disables CSRF (stateless API)
-     * - Permits /api/v1/auth/** and /error without authentication
-     * - Requires authentication for all other requests
-     * - Sets session management to STATELESS
-     * - Adds {@link JwtRequestFilter} before {@link UsernamePasswordAuthenticationFilter}
-     * - Customizes 401/403 responses as JSON
-     *
-     * @param http the HTTP security builder
-     * @return the configured {@link SecurityFilterChain}
-     * @throws Exception if configuration fails
+     * @param http the {@link HttpSecurity} object used to configure the security settings
+     *             for the application.
+     * @return the configured {@link SecurityFilterChain} that defines the security
+     *         mechanisms and filters applied to incoming requests.
+     * @throws Exception if an error occurs during the configuration of the security filter chain.
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -104,14 +130,12 @@ public class SecurityConfig {
     }
 
     /**
-     * Defines the CORS configuration for the API.
-     * <p>
-     * Allowed origins include the configured frontend URL from {@code app.frontend.url}
-     * and some local development URLs. Credentials are allowed so Authorization headers
-     * and cookies can be sent when required.
-     * </p>
+     * Configures Cross-Origin Resource Sharing (CORS) for the application.
+     * It allows specifying origins, HTTP methods, headers, and credentials support
+     * to handle requests from different origins securely.
      *
-     * @return a {@link CorsConfigurationSource} applied to all paths
+     * @return a configured {@link CorsConfigurationSource} instance that defines
+     *         CORS policies for handling requests across different origins
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -127,11 +151,13 @@ public class SecurityConfig {
     }
 
     /**
-     * Exposes the {@link AuthenticationManager} built by Spring from configured providers.
+     * Creates and provides a Spring Security {@link AuthenticationManager} bean.
+     * The {@link AuthenticationManager} is retrieved from the provided {@link AuthenticationConfiguration},
+     * which contains the security configuration for handling authentication.
      *
-     * @param config the auto-configured authentication configuration
-     * @return the application {@link AuthenticationManager}
-     * @throws Exception if the manager cannot be obtained
+     * @param config the {@link AuthenticationConfiguration} used to configure and retrieve the {@link AuthenticationManager}
+     * @return the configured {@link AuthenticationManager} instance
+     * @throws Exception if an error occurs during the retrieval of the {@link AuthenticationManager}
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -139,9 +165,10 @@ public class SecurityConfig {
     }
 
     /**
-     * Password encoder used to hash user passwords (BCrypt).
+     * Provides a {@link PasswordEncoder} bean for encoding passwords.
+     * This bean utilizes the BCrypt hashing algorithm to ensure password security.
      *
-     * @return a BCrypt-based {@link PasswordEncoder}
+     * @return an instance of {@link PasswordEncoder} using BCrypt hashing
      */
     @Bean
     public PasswordEncoder passwordEncoder() {

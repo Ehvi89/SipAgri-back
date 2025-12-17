@@ -21,7 +21,7 @@ class PlantationRepositoryTest {
         List<Plantation> plantations = plantationRepository.findAll();
 
         assertEquals(4, plantations.size());
-        assertEquals(2.5, plantations.getFirst().getFarmedArea());
+        assertEquals(2.5, plantations.get(0).getFarmedArea());
     }
 
     @Test

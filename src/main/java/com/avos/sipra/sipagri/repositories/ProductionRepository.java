@@ -10,6 +10,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Repository interface for managing {@code Production} entities.
+ * Provides methods for querying production data based on various conditions,
+ * aggregations, and entity relationships. Extends the standard Spring Data
+ * JPA repository to include custom query methods.
+ */
 @Repository
 public interface ProductionRepository extends JpaRepository<Production, Long> {
     /**
@@ -113,6 +119,15 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
             "ORDER BY SUM(pr.productionInKg) DESC")
     List<Object[]> sumProductionByPlantation();
 
+    /**
+     * Retrieves the total production by plantation under a specific supervisor.
+     * Each plantation's name and its corresponding total production (in kilograms) are returned
+     * in descending order of production.
+     *
+     * @param supervisorId the ID of the supervisor for whom the production data is to be fetched.
+     * @return a list of objects where each object contains the plantation name and its
+     *         total production in kilograms.
+     */
     @Query("SELECT pl.name, COALESCE(SUM(pr.productionInKg), 0.0) " +
             "FROM Production pr " +
             "JOIN Plantation pl ON pr.plantation.id = pl.id " +
@@ -163,7 +178,7 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
 
     /**
      * Retrieves the total production grouped by sector for a specified year, ordered by production in descending order.
-     *
+     * <p>
      * This method uses a custom query to join the Production and Plantation entities, filters data by the provided year,
      * aggregates production values for each sector, and returns the results as a list with sectors and their respective
      * total production values.

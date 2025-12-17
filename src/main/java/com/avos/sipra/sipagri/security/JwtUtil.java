@@ -14,37 +14,37 @@ import java.security.Key;
 import java.util.Date;
 
 /**
- * Utility component for creating and validating JSON Web Tokens (JWT).
- * <p>
- * The signing key is derived from the application property
- * {@code spring.security.oauth2.resourceserver.opaquetoken.client-secret}.
- * For HS256, the secret must be sufficiently long (at least 256 bits) to avoid
- * weak key errors. Tokens currently expire 1 hour after issuance.
- * </p>
- * <p>
- * This class is stateless except for the derived {@link #key} built at startup.
- * </p>
+ * Utility class for generating, parsing, and validating JSON Web Tokens (JWTs).
+ * This class relies on an HMAC signing key derived from a secret injected via application properties.
  */
 @Component
 public class JwtUtil {
 
     /**
-     * Secret used to derive the HMAC signing key. Injected from application properties.
+     * Represents the secret key used for signing and validating JSON Web Tokens (JWTs).
+     * The value is injected from application properties using a Spring Expression Language (SpEL) annotation.
+     * Typically, it is used to derive a cryptographic key for securing tokens in the application.
+     * The secret key must be kept confidential to ensure the integrity and validity of generated tokens.
      */
     @Value("${spring.security.oauth2.resourceserver.opaquetoken.client-secret}")
     private String secretKey;
 
     /**
-     * Derived HMAC key used to sign and verify tokens.
+     * The cryptographic key used for signing and verifying JSON Web Tokens (JWTs).
+     * This key is derived from the secret key provided via application properties and is initialized post-construction.
+     * It ensures secure token generation and validation processes.
      */
     private Key key;
 
     /**
-     * Initializes the signing key from the configured secret. Called once after bean construction.
-     * <p>
-     * Note: For HS256, ensure the secret length is adequate; otherwise {@code Keys.hmacShaKeyFor}
-     * will throw an exception at startup.
-     * </p>
+     * Initializes the HMAC signing key used for JWT generation and validation.
+     * This method is called automatically after the class is constructed and all
+     * required dependencies are injected. It converts the injected secret key
+     * string into a {@code Key} instance, which is then used for creating and
+     * parsing JSON Web Tokens (JWTs).
+     *
+     * @throws IllegalArgumentException if the secret key is invalid or cannot
+     *                                  be converted into a valid HMAC key.
      */
     @PostConstruct
     public void init() {
@@ -52,10 +52,13 @@ public class JwtUtil {
     }
 
     /**
-     * Generates a compact JWT for the given username (as subject), with a 1 hour expiration.
+     * Generates a JSON Web Token (JWT) for the specified username.
+     * The token includes the username as its subject, a timestamp for when it was issued,
+     * an expiration time of one hour from the current time, and is signed with an HMAC
+     * derived key using the HS256 algorithm.
      *
-     * @param username the principal identifier to embed as {@code sub}
-     * @return a compact serialized JWT string
+     * @param username the username to include as the subject in the token
+     * @return a compact JWT as a String
      */
     public String generateToken(String username) {
         return Jwts.builder()
@@ -67,11 +70,11 @@ public class JwtUtil {
     }
 
     /**
-     * Extracts the username (token subject) from the given JWT.
+     * Extracts the username (subject) from the given JSON Web Token (JWT).
      *
-     * @param token compact JWT string
-     * @return the embedded subject (username)
-     * @throws JwtException if the token cannot be parsed or is malformed
+     * @param token the JWT from which the username is to be extracted
+     * @return the username (subject) contained within the provided token
+     * @throws JwtException if the token structure is invalid or the parsing fails
      */
     public String extractUsername(String token) {
         try {
@@ -87,11 +90,13 @@ public class JwtUtil {
     }
 
     /**
-     * Validates a token for the given {@link UserDetails} by comparing the subject and expiration.
+     * Validates the given JWT (JSON Web Token) against the provided user details to ensure
+     * it is associated with the correct user and has not expired.
      *
-     * @param token       compact JWT string
-     * @param userDetails the user details to validate against
-     * @return {@code true} if token belongs to the provided user and is not expired; {@code false} otherwise
+     * @param token the JWT to be validated
+     * @param userDetails the user details containing the expected username for validation
+     * @return {@code true} if the token is valid, the username matches, and it has not expired;
+     *         {@code false} otherwise
      */
     public boolean validateToken(String token, UserDetails userDetails) {
         try {
@@ -105,10 +110,10 @@ public class JwtUtil {
     }
 
     /**
-     * Checks whether the provided token is expired according to its {@code exp} claim.
+     * Checks if the given JSON Web Token (JWT) is expired based on its expiration claim.
      *
-     * @param token compact JWT string
-     * @return {@code true} if expired, otherwise {@code false}
+     * @param token the JWT to be checked for expiration
+     * @return {@code true} if the token is expired, {@code false} otherwise
      */
     private boolean isTokenExpired(String token) {
         Date expiration = Jwts.parserBuilder()

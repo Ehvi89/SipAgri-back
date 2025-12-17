@@ -21,6 +21,36 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
 
+/**
+ * Implementation of the Dashboard Service that provides methods for retrieving and summarizing data
+ * related to planters, production, revenue, plantations, and other relevant categories.
+ * This class interacts with various repositories to fetch and process data for generating
+ * summaries, trends, and visualizations.
+ * <p>
+ * Fields:
+ * - F_CETTE_ANNEE: Constant or configuration for denoting the current year.
+ * - MMM_YYYY: Format specifier for representing dates.
+ * - planterRepository: Repository for accessing and querying planter-related data.
+ * - plantationRepository: Repository for accessing and querying plantation-related data.
+ * - productionRepository: Repository for accessing and querying production-related data.
+ * <p>
+ * Methods:
+ * - getResumesData(): Provides summarized data for planters, production, revenues, plantations, and kit values.
+ * - getResumesDataBySupervisor(Long supervisor): Fetches summarized data for a specific supervisor.
+ * - getProductionBySector(Integer year): Aggregates production data by sector for a specific year or all years if not specified.
+ * - getProductionBySupervisorBySector(Long supervisor, Integer year): Aggregates production data by supervisor and sector, filtered by year if specified.
+ * - getAvailableYears(): Retrieves distinct years from the production repository.
+ * - getAvailableYearsBySupervisor(Long supervisor): Retrieves distinct years for a specific supervisor from the production repository.
+ * - getProductionByPeriod(String period): Groups production data by a specified period such as week, quarter, or year.
+ * - getProductionBySupervisorByPeriod(Long supervisor, String period): Groups production data by supervisor for a specified period.
+ * - getProductionByPlantation(): Provides total production data grouped by plantation.
+ * - getProductionByPlantationBySupervisor(Long supervisor): Provides plantation-specific production totals for a given supervisor.
+ * - getProductionTrend(): Analyzes and returns production trends aggregated by year.
+ * - getProductionTrendBySupervisor(Long supervisor): Analyzes production trends for a specific supervisor.
+ * - formatProduction(double kg): Converts a production value into a readable string format with units like kg, tons (T), or kilotons (kT).
+ * - formatCurrency(double amount): Formats monetary values into a simplified currency string (e.g., K for thousands, M for millions).
+ * - formatDate(Date date, String period): Formats dates based on a specified period, such as quarter, week, or year.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -299,7 +329,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     /**
      * Retrieves the total production data grouped by plantation.
-     *
+     * <p>
      * The method fetches the production data aggregated by plantations from
      * the production repository, then maps the results into a list of
      * ChartDataDTO objects, which contain the plantation name and the corresponding

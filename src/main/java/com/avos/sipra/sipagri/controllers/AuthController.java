@@ -205,6 +205,15 @@ public class AuthController {
                 ));
     }
 
+    /**
+     * Extracts and returns the HTTP status code from the given HTTP request.
+     * If the status code is not found in the request attributes, it defaults to
+     * {@code HttpStatus.INTERNAL_SERVER_ERROR}.
+     *
+     * @param request the HTTP request containing potential error status attributes
+     * @return the corresponding {@code HttpStatus} for the status code in the request,
+     *         or {@code HttpStatus.INTERNAL_SERVER_ERROR} if the status code is unavailable
+     */
     private HttpStatus getStatus(HttpServletRequest request) {
         Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
         if (statusCode == null) {

@@ -154,6 +154,16 @@ public class ProductionServiceImpl implements ProductionService{
         return productionDTOS;
     }
 
+    @Override
+    public List<ProductionDTO> findAll(Long supervisorId) {
+        List<Production> productions = productionRepository.findAllBySupervisorOrderByYear(supervisorId);
+        List<ProductionDTO> productionDTOS = new ArrayList<>();
+        for (Production production : productions) {
+            productionDTOS.add(productionMapper.toDTO(production));
+        }
+        return productionDTOS;
+    }
+
     /**
      * Retrieves a paginated list of ProductionDTO objects based on the given pageable information.
      *

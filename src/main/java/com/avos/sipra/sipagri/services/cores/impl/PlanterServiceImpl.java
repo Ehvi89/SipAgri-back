@@ -29,12 +29,24 @@ public class PlanterServiceImpl implements PlanterService {
     @Override
     public PlanterDTO save(PlanterDTO planterDTO) {
         Planter planter = planterMapper.toEntity(planterDTO);
+
         if (planter.getCreatedAt() == null) {
-            planter.setCreatedAt(LocalDateTime.now());
+            LocalDateTime now = LocalDateTime.now();
+            planter.setCreatedAt(now);
+
+            long countForYear = planterRepository.countPlantersByRegistrationYear(now.getYear());
+            String uid = String.format("%02d", now.getYear() % 100) + "-SIPAGRI"
+                    + String.format("%04d", countForYear + 1)
+                    + planter.getFirstname().charAt(0)
+                    + planter.getVillage().charAt(0);
+
+            planter.setUidPlanter(uid);
         }
+
         planter = planterRepository.save(planter);
         return planterMapper.toDTO(planter);
     }
+
 
     @Override
     public PlanterDTO update(PlanterDTO planterDTO) {
@@ -61,6 +73,16 @@ public class PlanterServiceImpl implements PlanterService {
     @Override
     public List<PlanterDTO> findAll() {
         List<Planter> planterList = planterRepository.findAll();
+        List<PlanterDTO> planterDTOList = new ArrayList<>();
+        for(Planter planter : planterList) {
+            planterDTOList.add(planterMapper.toDTO(planter));
+        }
+        return planterDTOList;
+    }
+
+    @Override
+    public List<PlanterDTO> findAll(Long supervisorId) {
+        List<Planter> planterList = planterRepository.findPlanterBySupervisor_Id(supervisorId);
         List<PlanterDTO> planterDTOList = new ArrayList<>();
         for(Planter planter : planterList) {
             planterDTOList.add(planterMapper.toDTO(planter));
