@@ -2,12 +2,13 @@ name: 🚀 Build and Deploy SipAGRI
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
+#  pull_request:
+#    branches: [ main, develop ]
 
 jobs:
-  build-and-deploy:
+  build-SIPAGRI:
+    if: github.ref == 'refs/heads/develop'
     runs-on: self-hosted
     concurrency:
       group: production-deploy
@@ -37,13 +38,36 @@ jobs:
           mvn clean test -Ptest
           mvn clean package -Pprod -DskipTests=true
         env:
-          # Variables d'environnement pour les tests
           SPRING_PROFILES_ACTIVE: test
 
-      # Alternative si vous voulez garder les tests unitaires mais skip les tests d'intégration
-      # - name: Build with Maven (alternative)
-      #   run: |
-      #     mvn clean package -Pprod -DskipITs=true -Dspring.profiles.active=test
+  build-deploy-main:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    runs-on: self-hosted
+
+    steps:
+      # Étape 1: Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Étape 2: Configurer Java et Maven
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.5
+        with:
+          maven-version: 3.9.9
+
+      # Étape 3: Builder le projet avec Maven
+      - name: Build with Maven
+        run: |
+          mvn clean package -Pprod -DskipTests=true
+        env:
+          SPRING_PROFILES_ACTIVE: prod
 
       # Étape 4: Déployer le JAR (localement sur le serveur Windows)
       - name: Deploy JAR locally
@@ -70,17 +94,17 @@ jobs:
                   Move-Item -Path $JAR.FullName -Destination "$TODAY_ARCHIVE\$($JAR.Name)" -Force
               }
           
-              Write-Output "Deploiement de l'environement'"
-              $NEW_ENV = Get-ChildItem -Path ".env" | Select-Object -First 1
+              Write-Output "Deploiement de l'environnement"
+              $NEW_ENV = Get-ChildItem -Path ".env" -ErrorAction SilentlyContinue | Select-Object -First 1
               if ($NEW_ENV) {
                   Copy-Item -Path $NEW_ENV.FullName -Destination $DEPLOY_DIR -Force
                   Write-Output "Deploye: $($NEW_ENV.Name) -> $DEPLOY_DIR"
               } else {
-                  throw "Aucun fichier .ENV trouve"
+                  Write-Output "Aucun fichier .env trouve (optionnel)"
               }
 
               Write-Output "Deploiement de la nouvelle version..."
-              $NEW_JAR = Get-ChildItem -Path "target\*.jar" | Select-Object -First 1
+              $NEW_JAR = Get-ChildItem -Path "target\*.jar" -ErrorAction SilentlyContinue | Select-Object -First 1
               if ($NEW_JAR) {
                   Copy-Item -Path $NEW_JAR.FullName -Destination $DEPLOY_DIR -Force
                   Write-Output "Deploye: $($NEW_JAR.Name) -> $DEPLOY_DIR"
@@ -95,9 +119,9 @@ jobs:
               Write-Output "Statut du service:"
               C:\nssm\win64\nssm.exe status $SERVICE_NAME
 
-              Write-Output "`nDéploiement terminé avec succes!"
+              Write-Output "`nDeploiement termine avec succes!"
           }
           catch {
-              Write-Output "Erreur lors du déploiement: $($_.Exception.Message)"
+              Write-Output "Erreur lors du deploiement: $($_.Exception.Message)"
               exit 1
           }
